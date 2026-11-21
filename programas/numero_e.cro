@@ -1,0 +1,79 @@
+// Calcula 200 decimales del numero e (algoritmo spigot de Sale)
+//
+// e = 2 + 1/2!(1 + 1/3(1 + 1/4(1 + ...)))
+// Cada termino a[i] es un "digito" en una base rara donde la posicion i vale 1/i!.
+// Multiplicar todo por 10 y arrastrar el acarreo de derecha a izquierda
+// saca un decimal de e por la izquierda, sin numeros mas grandes de ~1300.
+//
+// a[i] vive en N[i] con B = i, asi B hace de contador y de puntero a la vez.
+// Los digitos salen en M desde la 1000: mira la RAM M "fija desde" 1000.
+
+// a[i] = 1 para i = 130 .. 2
+@130
+A => B
+PC+1 => C
+1 => N
+B-1 => B
+B-1 >0          // sigue mientras i >= 2
+
+// M[1000] = 2, la parte entera
+@1000
+A => B
+@p
+B => M
+@2
+A => B
+@1000
+B => M
+@p
+M+1 => M        // p apunta a la 1001
+@200
+A => B
+@quedan
+B => M          // quedan = 200 digitos
+
+(DIGITO)
+@x
+0 => M          // acarreo = 0
+@130
+A => B          // i = 130
+
+(TERMINO)
+@x
+M+2N => M       // x = acarreo + 10 * a[i]
+M+2N => M
+M+2N => M
+M+2N => M
+M+2N => M
+0 => N          // N[i] cuenta el cociente
+
+// division por restas: cociente en N[i], resto en M[x]
+PC+1 => C
+N+1 => N
+M-B => M >=0
+M+B => M        // la ultima resta se ha pasado: se deshace
+N-1 => N
+
+// intercambio sin variable extra: a[i] = resto, acarreo = cociente
+M+N => M
+M-N => N
+M-N => M
+
+@TERMINO
+A => C
+B-1 => B
+B-1 >0          // siguiente i mientras i >= 2
+
+// el acarreo que sale por la izquierda es el siguiente decimal
+@x
+M => B
+@p
+M => A
+B => M          // M[p] = digito
+@p
+M+1 => M
+@DIGITO
+A => C
+@quedan
+M-1 => M >0
+PARA

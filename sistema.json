@@ -1,0 +1,102 @@
+{
+  "cables": [
+    {
+      "nombre": "PARA",
+      "que_hace": "para el reloj"
+    },
+    {
+      "nombre": "SALTO_C",
+      "que_hace": "el PC carga C"
+    },
+    {
+      "nombre": "SALTO_R",
+      "que_hace": "el PC y el banco cargan lo guardado en R"
+    },
+    {
+      "nombre": "GUARDA_R",
+      "que_hace": "R guarda PC+1 y el banco actual"
+    },
+    {
+      "nombre": "BANCO_RAM",
+      "que_hace": "las instrucciones salen de la RAM de programas"
+    },
+    {
+      "nombre": "BANCO_ROM",
+      "que_hace": "las instrucciones salen de la ROM"
+    },
+    {
+      "nombre": "GRABA_PROG",
+      "que_hace": "RAM de programas[B] = M[A], solo con banco ROM"
+    },
+    {
+      "nombre": "A_MITAD",
+      "que_hace": "A = A / 2: desplaza a la derecha y mantiene el signo"
+    },
+    {
+      "nombre": "A_TECLA",
+      "que_hace": "A = tecla pulsada, y la tecla se borra"
+    }
+  ],
+  "instrucciones": [
+    {
+      "codigo": 1,
+      "texto": "PARA",
+      "cables": [
+        "PARA"
+      ],
+      "que_hace": "para la máquina"
+    },
+    {
+      "codigo": 2,
+      "texto": "LANZA",
+      "cables": [
+        "GUARDA_R",
+        "BANCO_RAM",
+        "SALTO_C"
+      ],
+      "que_hace": "salta a C dentro de la RAM de programas y guarda la vuelta en R"
+    },
+    {
+      "codigo": 3,
+      "texto": "VUELVE",
+      "cables": [
+        "GUARDA_R",
+        "BANCO_ROM",
+        "SALTO_C"
+      ],
+      "que_hace": "salta a C dentro de la ROM y guarda la vuelta en R"
+    },
+    {
+      "codigo": 4,
+      "texto": "RETORNA",
+      "cables": [
+        "SALTO_R"
+      ],
+      "que_hace": "vuelve a donde dice R, en su banco"
+    },
+    {
+      "codigo": 5,
+      "texto": "GRABA",
+      "cables": [
+        "GRABA_PROG"
+      ],
+      "que_hace": "copia M[A] en la RAM de programas, en la dirección B"
+    },
+    {
+      "codigo": 6,
+      "texto": "A/2 => A",
+      "cables": [
+        "A_MITAD"
+      ],
+      "que_hace": "divide A entre 2"
+    },
+    {
+      "codigo": 7,
+      "texto": "TECLA => A",
+      "cables": [
+        "A_TECLA"
+      ],
+      "que_hace": "lee la tecla pulsada (0 si no hay)"
+    }
+  ]
+}

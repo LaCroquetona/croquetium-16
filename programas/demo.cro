@@ -1,0 +1,11 @@
+// demo: cuenta atras de 5 a 0 en la variable cuenta
+@5
+A => B          // B = 5
+@cuenta
+B => M          // cuenta = 5
+@BUCLE
+A => C          // C = adonde salta
+(BUCLE)
+@cuenta
+M-1 => M >0     // resta 1 y si sigue > 0 vuelve a BUCLE
+PARA
