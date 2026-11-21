@@ -9,6 +9,7 @@ import croquetium as cq
 
 FUENTE = ("Consolas", 11)
 FUENTE_GRANDE = ("Consolas", 14, "bold")
+FUENTE_CHICA = ("Consolas", 8)
 
 FONDO = "#1d1f21"
 PANEL = "#26292b"
@@ -23,10 +24,13 @@ LINEA_ACTUAL = "#3d3622"
 FILA_PUNTERO = "#2c3a28"
 FILA_CAMBIADA = "#55401a"
 FILA_RESALTADA = "#243746"
+BIT_APAGADO = "#2e3133"
 
 VELOCIDADES = [1, 2, 5, 10, 25, 50, 100, 500, 2000, "max"]
 FILAS_RAM = 16
 REGISTROS = ("A", "B", "C", "PC", "R", "TECLA")
+ORIENTACIONES = ("filas", "columnas")
+MAX_PALABRAS = 64
 
 COLOR_CAMPO = {
     "15": GRIS, "X": AZUL, "Y": AZUL, "OOOOO": AMBAR,
@@ -150,35 +154,71 @@ class PanelRAM:
         self.filas = FILAS_RAM
         # Lo que se ha scrolleado en modo seguir. Dura hasta el siguiente paso.
         self.vistazo = None
+        self.en_tablero = False
+        self.desde_tablero = tk.StringVar(value=str(cq.PRIMERA_VARIABLE))
+        self.palabras = tk.StringVar(value="16")
+        self.orientacion = tk.StringVar(value=ORIENTACIONES[0])
+        # Lo que valia cada palabra del tablero la ultima vez que se pinto.
+        self.antes = {}
 
         marco = tk.Frame(padre, bg=PANEL, padx=6, pady=6)
         marco.pack(side="left", fill="both", expand=True, padx=4)
         cabecera = tk.Frame(marco, bg=PANEL)
         cabecera.pack(fill="x", pady=(0, 4))
-        tk.Label(cabecera, text=f"RAM {letra}", font=FUENTE_GRANDE, fg=AMBAR, bg=PANEL).pack(side="left")
+        self.titulo = tk.Label(cabecera, text=f"RAM {letra}", font=FUENTE_GRANDE, fg=AMBAR, bg=PANEL)
+        self.titulo.pack(side="left")
+        self.boton_vista = boton(cabecera, "tablero", self.cambiar_vista)
+        self.boton_vista.pack(side="right")
+
+        self.ctrl_numeros = tk.Frame(cabecera, bg=PANEL)
+        self.ctrl_numeros.pack(side="left")
         radio = dict(font=FUENTE, bg=PANEL, fg=TEXTO, selectcolor=FONDO,
                      activebackground=PANEL, activeforeground=TEXTO, command=self.cambiar_modo)
-        tk.Radiobutton(cabecera, text=f"seguir {puntero}", variable=self.modo, value="seguir", **radio).pack(side="left", padx=(10, 0))
-        tk.Radiobutton(cabecera, text="fija desde", variable=self.modo, value="fija", **radio).pack(side="left")
-        caja = entrada(cabecera, self.desde, 6)
+        tk.Radiobutton(self.ctrl_numeros, text=f"seguir {puntero}", variable=self.modo, value="seguir", **radio).pack(side="left", padx=(10, 0))
+        tk.Radiobutton(self.ctrl_numeros, text="fija desde", variable=self.modo, value="fija", **radio).pack(side="left")
+        caja = entrada(self.ctrl_numeros, self.desde, 6)
         caja.pack(side="left", padx=4)
         caja.bind("<Return>", self.fijar)
 
-        fila = tk.Frame(marco, bg=PANEL)
-        fila.pack(fill="x", pady=(0, 4))
-        etiqueta(fila, "resaltar").pack(side="left")
-        caja = entrada(fila, self.texto_resaltar, 18)
+        self.fila_resaltar = tk.Frame(marco, bg=PANEL)
+        self.fila_resaltar.pack(fill="x", pady=(0, 4))
+        etiqueta(self.fila_resaltar, "resaltar").pack(side="left")
+        caja = entrada(self.fila_resaltar, self.texto_resaltar, 18)
         caja.pack(side="left", padx=4)
         caja.bind("<Return>", self.poner_resaltado)
-        self.aviso = etiqueta(fila, "ej: 100-200, 300")
+        self.aviso = etiqueta(self.fila_resaltar, "ej: 100-200, 300")
         self.aviso.pack(side="left", padx=4)
 
-        cuerpo = tk.Frame(marco, bg=PANEL)
-        cuerpo.pack(fill="both", expand=True)
-        self.barra = ttk.Scrollbar(cuerpo, orient="vertical", command=self.desplazar)
+        self.ctrl_tablero = tk.Frame(marco, bg=PANEL)
+        etiqueta(self.ctrl_tablero, "desde").pack(side="left")
+        caja = entrada(self.ctrl_tablero, self.desde_tablero, 8)
+        caja.pack(side="left", padx=(4, 8))
+        caja.bind("<Return>", lambda e: ide.refrescar())
+        caja.bind("<FocusOut>", lambda e: ide.refrescar())
+        etiqueta(self.ctrl_tablero, "palabras").pack(side="left")
+        cuantas = tk.Spinbox(self.ctrl_tablero, from_=1, to=MAX_PALABRAS, textvariable=self.palabras, width=3,
+                             font=FUENTE, bg=FONDO, fg=TEXTO, buttonbackground=PANEL, insertbackground=TEXTO,
+                             relief="flat", command=ide.refrescar)
+        cuantas.pack(side="left", padx=4)
+        cuantas.bind("<Return>", lambda e: ide.refrescar())
+        etiqueta(self.ctrl_tablero, "en").pack(side="left")
+        menu = tk.OptionMenu(self.ctrl_tablero, self.orientacion, *ORIENTACIONES,
+                             command=lambda _v: ide.refrescar())
+        menu.config(font=FUENTE, bg=PANEL, fg=TEXTO, activebackground="#3a3e40", activeforeground=TEXTO,
+                    relief="flat", highlightthickness=0, padx=4)
+        menu["menu"].config(font=FUENTE, bg=PANEL, fg=TEXTO, activebackground="#3a3e40")
+        menu.pack(side="left")
+
+        self.cuerpo = tk.Frame(marco, bg=PANEL)
+        self.cuerpo.pack(fill="both", expand=True)
+        self.lienzo = tk.Canvas(self.cuerpo, bg=FONDO, highlightthickness=0, width=300, height=FILAS_RAM * 21 + 24)
+        self.lienzo.bind("<Configure>", lambda e: self.en_tablero and self.pintar_tablero())
+        self.vista_numeros = tk.Frame(self.cuerpo, bg=PANEL)
+        self.vista_numeros.pack(fill="both", expand=True)
+        self.barra = ttk.Scrollbar(self.vista_numeros, orient="vertical", command=self.desplazar)
         self.barra.pack(side="right", fill="y")
         columnas = ("dir", "nombre", "valor", "hex")
-        self.tabla = ttk.Treeview(cuerpo, columns=columnas, show="headings", height=FILAS_RAM, selectmode="none")
+        self.tabla = ttk.Treeview(self.vista_numeros, columns=columnas, show="headings", height=FILAS_RAM, selectmode="none")
         for col, ancho in zip(columnas, (70, 90, 75, 60)):
             self.tabla.heading(col, text=col)
             self.tabla.column(col, width=ancho, anchor="w" if col == "nombre" else "e")
@@ -192,6 +232,24 @@ class PanelRAM:
         self.tabla.bind("<MouseWheel>", lambda e: self.mover(-3 * e.delta // 120))
         self.tabla.bind("<Button-4>", lambda e: self.mover(-3))
         self.tabla.bind("<Button-5>", lambda e: self.mover(3))
+
+    def cambiar_vista(self):
+        self.en_tablero = not self.en_tablero
+        if self.en_tablero:
+            self.ctrl_numeros.pack_forget()
+            self.fila_resaltar.pack_forget()
+            self.vista_numeros.pack_forget()
+            self.ctrl_tablero.pack(fill="x", pady=(0, 4), before=self.cuerpo)
+            self.lienzo.pack(fill="both", expand=True)
+            self.boton_vista.config(text="números")
+        else:
+            self.ctrl_tablero.pack_forget()
+            self.lienzo.pack_forget()
+            self.ctrl_numeros.pack(side="left", after=self.titulo)
+            self.fila_resaltar.pack(fill="x", pady=(0, 4), before=self.cuerpo)
+            self.vista_numeros.pack(fill="both", expand=True)
+            self.boton_vista.config(text="tablero")
+        self.ide.refrescar()
 
     def fijar(self, _evento=None):
         self.modo.set("fija")
@@ -258,6 +316,9 @@ class PanelRAM:
             self.mover(int(cantidad))
 
     def refrescar(self):
+        if self.en_tablero:
+            self.pintar_tablero()
+            return
         maquina = self.ide.maquina
         ram = getattr(maquina, self.letra)
         apuntada = getattr(maquina, self.puntero)
@@ -284,6 +345,77 @@ class PanelRAM:
             flecha = f"{self.puntero}> " if dir_ == apuntada else ""
             self.tabla.insert("", "end", iid=str(dir_), tags=marcas, values=(
                 f"{flecha}{dir_}", nombres.get(dir_, ""), cq.con_signo(valor), f"{valor:04X}"))
+
+    def inicio_tablero(self):
+        texto = self.desde_tablero.get().strip()
+        valor = cq.leer_numero(texto)
+        if valor is None:
+            # Tambien vale el nombre de una variable del programa.
+            valor = {nombre: dir_ for dir_, nombre in self.ide.nombres.items()}.get(texto)
+        if valor is None or not 0 <= valor < cq.TAM_RAM:
+            return None
+        return valor
+
+    def pintar_tablero(self):
+        lienzo = self.lienzo
+        lienzo.delete("all")
+        inicio = self.inicio_tablero()
+        if inicio is None:
+            lienzo.create_text(8, 8, anchor="nw", fill=ROJO, font=FUENTE,
+                               text=f"'{self.desde_tablero.get().strip()}' no es\nuna dirección ni una variable")
+            return
+        cuantas = cq.leer_numero(self.palabras.get().strip()) or 16
+        cuantas = max(1, min(cuantas, MAX_PALABRAS, cq.TAM_RAM - inicio))
+
+        maquina = self.ide.maquina
+        ram = getattr(maquina, self.letra)
+        apuntada = getattr(maquina, self.puntero)
+        en_filas = self.orientacion.get() == ORIENTACIONES[0]
+        columnas, filas = (16, cuantas) if en_filas else (cuantas, 16)
+        # Con palabra = columna las direcciones van giradas arriba.
+        izquierda, arriba = (46, 16) if en_filas else (22, 44)
+        ancho = max(lienzo.winfo_width(), 100)
+        alto = max(lienzo.winfo_height(), 100)
+        celda = min((ancho - izquierda - 4) // columnas, (alto - arriba - 4) // filas, 26)
+        celda = max(celda, 3)
+        cada = 1 if celda >= 11 else 4
+
+        for bit in range(16):
+            pos = 15 - bit
+            if bit % cada:
+                continue
+            if en_filas:
+                lienzo.create_text(izquierda + pos * celda + celda / 2, arriba - 3, anchor="s",
+                                   text=str(bit), fill=GRIS, font=FUENTE_CHICA)
+            else:
+                lienzo.create_text(izquierda - 4, arriba + pos * celda + celda / 2, anchor="e",
+                                   text=str(bit), fill=GRIS, font=FUENTE_CHICA)
+
+        cambiadas = {dir_ for letra, dir_ in self.ide.cambiadas if letra == self.letra}
+        for i in range(cuantas):
+            dir_ = inicio + i
+            valor = ram[dir_]
+            viejo = self.antes.get(dir_, valor) if dir_ in cambiadas else valor
+            if i % cada == 0:
+                color = VERDE if dir_ == apuntada else GRIS
+                if en_filas:
+                    lienzo.create_text(izquierda - 4, arriba + i * celda + celda / 2, anchor="e",
+                                       text=str(dir_), fill=color, font=FUENTE_CHICA)
+                else:
+                    lienzo.create_text(izquierda + i * celda + celda / 2, arriba - 3, anchor="w", angle=90,
+                                       text=str(dir_), fill=color, font=FUENTE_CHICA)
+            for bit in range(16):
+                pos = 15 - bit
+                col, fila = (pos, i) if en_filas else (i, pos)
+                x = izquierda + col * celda
+                y = arriba + fila * celda
+                encendido = valor >> bit & 1
+                if (valor ^ viejo) >> bit & 1:
+                    color = AMBAR if encendido else FILA_CAMBIADA
+                else:
+                    color = TEXTO if encendido else BIT_APAGADO
+                lienzo.create_rectangle(x, y, x + celda - 1, y + celda - 1, fill=color, outline="")
+        self.antes = {inicio + i: ram[inicio + i] for i in range(cuantas)}
 
     def editar(self, evento):
         fila = self.tabla.identify_row(evento.y)

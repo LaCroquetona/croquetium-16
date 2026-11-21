@@ -1,0 +1,12 @@
+0=>M            // M[0] = 0
+1=>B            // B = F(1), el primero que se guarda
+PC+1=>C
+A+1=>A          // <- C: avanza
+B=>M            // guarda el número que ya sabemos que es bueno
+A-1=>A
+M=>B            // B = el anterior
+A+1=>A
+M+B=>B >0       // calcula el siguiente; si es positivo, vuelve a guardarlo
+PARA
+
+
