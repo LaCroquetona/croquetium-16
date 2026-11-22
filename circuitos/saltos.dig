@@ -1,133 +1,487 @@
 <?xml version="1.0" encoding="utf-8"?>
 <circuit>
   <version>2</version>
-  <attributes><entry><string>Description</string><string>Flags y saltos. Z, N y P salen del resultado de la ALU sin guardarse. JJJ dice con cuáles se salta: J0 con P, J1 con Z, J2 con N.</string></entry></attributes>
+  <attributes>
+    <entry><string>Description</string><string>Saltos: decide si el PC salta y a qué dirección, y guarda el registro C. Arriba, la condición: se compara RES con 0 y se mira si alguna condición pedida se cumple. Abajo, el registro C y el destino del salto (C, o la cima de la pila con RETORNA).</string></entry>
+    <entry><string>shapeType</string><shapeType>LAYOUT</shapeType></entry>
+    <entry><string>Width</string><int>24</int></entry>
+    <entry><string>Height</string><int>12</int></entry>
+  </attributes>
   <visualElements>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>res</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="0"/></visualElement>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>J</string></entry><entry><string>Bits</string><int>3</int></entry></elementAttributes><pos x="0" y="120"/></visualElement>
-    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Flags</string></entry></elementAttributes><pos x="200" y="-60"/></visualElement>
-    <visualElement><elementName>Comparator</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="200" y="0"/></visualElement>
-    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="200" y="340"/></visualElement>
-    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>16</string></entry><entry><string>Output Splitting</string><string>15,1</string></entry></elementAttributes><pos x="200" y="120"/></visualElement>
-    <visualElement><elementName>NOr</elementName><elementAttributes></elementAttributes><pos x="420" y="0"/></visualElement>
-    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Saltos</string></entry></elementAttributes><pos x="640" y="-60"/></visualElement>
-    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>3</string></entry><entry><string>Output Splitting</string><string>1,1,1</string></entry></elementAttributes><pos x="640" y="0"/></visualElement>
-    <visualElement><elementName>And</elementName><elementAttributes></elementAttributes><pos x="840" y="0"/></visualElement>
-    <visualElement><elementName>And</elementName><elementAttributes></elementAttributes><pos x="840" y="120"/></visualElement>
-    <visualElement><elementName>And</elementName><elementAttributes></elementAttributes><pos x="840" y="240"/></visualElement>
-    <visualElement><elementName>Or</elementName><elementAttributes><entry><string>Inputs</string><int>3</int></entry></elementAttributes><pos x="1060" y="100"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>salta</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1300" y="120"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>Z</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1300" y="200"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>N</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1300" y="260"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>P</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1300" y="320"/></visualElement>
-    <visualElement><elementName>Testcase</elementName><elementAttributes><entry><string>Label</string><string>saltos</string></entry><entry><string>Testdata</string><testData><dataString>res J salta Z N P
-0x0000 0 0 1 0 0
-0x0000 1 0 1 0 0
-0x0000 2 1 1 0 0
-0x0000 3 1 1 0 0
-0x0000 4 0 1 0 0
-0x0000 5 0 1 0 0
-0x0000 6 1 1 0 0
-0x0000 7 1 1 0 0
-0x0005 0 0 0 0 1
-0x0005 1 1 0 0 1
-0x0005 2 0 0 0 1
-0x0005 3 1 0 0 1
-0x0005 4 0 0 0 1
-0x0005 5 1 0 0 1
-0x0005 6 0 0 0 1
-0x0005 7 1 0 0 1
-0x7FFF 0 0 0 0 1
-0x7FFF 1 1 0 0 1
-0x7FFF 2 0 0 0 1
-0x7FFF 3 1 0 0 1
-0x7FFF 4 0 0 0 1
-0x7FFF 5 1 0 0 1
-0x7FFF 6 0 0 0 1
-0x7FFF 7 1 0 0 1
-0x8000 0 0 0 1 0
-0x8000 1 0 0 1 0
-0x8000 2 0 0 1 0
-0x8000 3 0 0 1 0
-0x8000 4 1 0 1 0
-0x8000 5 1 0 1 0
-0x8000 6 1 0 1 0
-0x8000 7 1 0 1 0
-0xFFFF 0 0 0 1 0
-0xFFFF 1 0 0 1 0
-0xFFFF 2 0 0 1 0
-0xFFFF 3 0 0 1 0
-0xFFFF 4 1 0 1 0
-0xFFFF 5 1 0 1 0
-0xFFFF 6 1 0 1 0
-0xFFFF 7 1 0 1 0
-</dataString></testData></entry></elementAttributes><pos x="0" y="400"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>res</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="20" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="20" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>res</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="180" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>cero16</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="180" y="20"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>Z</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="280" y="20"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>cero16</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="180" y="340"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>res</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="180" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>N</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="240" y="140"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>Z</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="400" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>N</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="400" y="40"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>P</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="520" y="20"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="620" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J0</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="680" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J1</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="680" y="20"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J2</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="680" y="40"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J0</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="0"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>P</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="40"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J0P</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="920" y="20"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J1</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>Z</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="160"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J1Z</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="920" y="140"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J2</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="240"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>N</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="820" y="280"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J2N</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="920" y="260"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J0P</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1040" y="100"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J1Z</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1040" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>J2N</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1040" y="140"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>salta</string></entry><entry><string>rotation</string><rotation rotation="0"/></entry></elementAttributes><pos x="1140" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>salta</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1280" y="120"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>Z</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1280" y="200"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>N</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1280" y="260"/></visualElement>
-    <visualElement><elementName>Tunnel</elementName><elementAttributes><entry><string>NetName</string><string>P</string></entry><entry><string>rotation</string><rotation rotation="2"/></entry></elementAttributes><pos x="1280" y="320"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>SI-NO-CARRY</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="220" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>SI-CARRY</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="300" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>J</string></entry><entry><string>Bits</string><int>3</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="380" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>GUARDA-C</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="780" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>enC</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="860" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>SALTO-R</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="1080" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>SALTO-C</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="1140" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>RES</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="140"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>carry</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="200"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>PC+1</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="440"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>cimaR</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="600"/></visualElement>
+    <visualElement><elementName>Clock</elementName><elementAttributes><entry><string>Label</string><string>Clk</string></entry><entry><string>rotation</string><rotation rotation="1"/></entry></elementAttributes><pos x="900" y="700"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>salta</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1380" y="80"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>destino</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="1380" y="420"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>C</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="1380" y="520"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Estado: RES comparado con 0
+(&gt; = &lt;) y el carry</string></entry></elementAttributes><pos x="60" y="280"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Lo que pide
+la instrucción</string></entry></elementAttributes><pos x="40" y="20"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Salta si se cumple
+alguna condición</string></entry></elementAttributes><pos x="540" y="200"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>pide</string></entry></elementAttributes><pos x="440" y="0"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>estado</string></entry></elementAttributes><pos x="340" y="100"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>C guarda RES,
+o PC+1 con GUARDA-C</string></entry></elementAttributes><pos x="420" y="480"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Destino: C, o la cima
+de R con SALTO-R</string></entry></elementAttributes><pos x="1100" y="300"/></visualElement>
+    <visualElement><elementName>Comparator</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>Signed</string><boolean>true</boolean></entry></elementAttributes><pos x="120" y="140"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="100" y="160"/></visualElement>
+    <visualElement><elementName>Not</elementName><elementAttributes></elementAttributes><pos x="140" y="240"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>1,1,1,1,1</string></entry><entry><string>Output Splitting</string><string>5</string></entry></elementAttributes><pos x="300" y="140"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>3,1,1</string></entry><entry><string>Output Splitting</string><string>5</string></entry></elementAttributes><pos x="400" y="40"/></visualElement>
+    <visualElement><elementName>And</elementName><elementAttributes><entry><string>Bits</string><int>5</int></entry></elementAttributes><pos x="500" y="40"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>5</string></entry><entry><string>Output Splitting</string><string>1,1,1,1,1</string></entry></elementAttributes><pos x="600" y="60"/></visualElement>
+    <visualElement><elementName>Or</elementName><elementAttributes><entry><string>Inputs</string><int>5</int></entry></elementAttributes><pos x="680" y="60"/></visualElement>
+    <visualElement><elementName>Or</elementName><elementAttributes><entry><string>Inputs</string><int>3</int></entry></elementAttributes><pos x="1180" y="60"/></visualElement>
+    <visualElement><elementName>Multiplexer</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>flipSelPos</string><boolean>true</boolean></entry></elementAttributes><pos x="760" y="400"/></visualElement>
+    <visualElement><elementName>Register</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>Label</string><string>C</string></entry></elementAttributes><pos x="920" y="420"/></visualElement>
+    <visualElement><elementName>Multiplexer</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>flipSelPos</string><boolean>true</boolean></entry></elementAttributes><pos x="1060" y="400"/></visualElement>
+    <visualElement><elementName>Testcase</elementName><elementAttributes><entry><string>Label</string><string>saltos</string></entry><entry><string>Testdata</string><testData><dataString>Clk RES carry PC+1 cimaR J SI-CARRY SI-NO-CARRY SALTO-C SALTO-R GUARDA-C enC salta destino C
+0 0x0000 0 0 0x79D6 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 1 0 0x42C6 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xBD6A 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0xF2B7 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x218C 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0x06BD 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xF03F 0 0 0 0 1 0 0 1 0xF03F 0x0000
+0 0x0000 0 0 0x84CA 1 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 1 0 0x77FA 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x622C 1 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0xF0C6 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0xF3E4 1 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0xCB55 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x4D1D 1 0 0 0 1 0 0 1 0x4D1D 0x0000
+0 0x0000 0 0 0x76BE 2 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x4DA1 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xC7A5 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x07C1 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x20C8 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x519C 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x15E8 2 0 0 0 1 0 0 1 0x15E8 0x0000
+0 0x0000 0 0 0x9A3F 3 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x0FE0 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x89F2 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xF20C 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0xC674 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xDA97 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xCA38 3 0 0 0 1 0 0 1 0xCA38 0x0000
+0 0x0000 0 0 0xE3A5 4 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 1 0 0x44AF 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xBB25 4 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0x31E5 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x125F 4 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0x459D 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xFD61 4 0 0 0 1 0 0 1 0xFD61 0x0000
+0 0x0000 0 0 0x6F18 5 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 1 0 0x8416 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xDF50 5 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0x9A20 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0xD7A0 5 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0000 0 0 0xC590 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xB3AA 5 0 0 0 1 0 0 1 0xB3AA 0x0000
+0 0x0000 0 0 0xD0AD 6 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x76FB 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xAC6C 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x0EAC 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x8F32 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x5381 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xA71C 6 0 0 0 1 0 0 1 0xA71C 0x0000
+0 0x0000 0 0 0x3549 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x6C18 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x88BF 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x91E5 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 1 0 0x3FB5 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0x207D 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0000 0 0 0xF6C8 7 0 0 0 1 0 0 1 0xF6C8 0x0000
+0 0x0001 0 0 0xF78E 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 1 0 0x2D52 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xB02B 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0x221A 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xD228 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0x4D31 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x0A4D 0 0 0 0 1 0 0 1 0x0A4D 0x0000
+0 0x0001 0 0 0x9678 1 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xDAB2 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xD494 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x3CE2 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x16A0 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x1702 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xC16F 1 0 0 0 1 0 0 1 0xC16F 0x0000
+0 0x0001 0 0 0xA972 2 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 1 0 0x8EE2 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x78CE 2 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0x1270 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x9E8D 2 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0x03B4 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x2768 2 0 0 0 1 0 0 1 0x2768 0x0000
+0 0x0001 0 0 0x375B 3 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x1010 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x650F 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xD0DD 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x954E 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x86D8 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x4FF9 3 0 0 0 1 0 0 1 0x4FF9 0x0000
+0 0x0001 0 0 0x15BA 4 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 1 0 0xADFC 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xA0AE 4 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0xB86B 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x46D2 4 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0xC16D 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xC0E5 4 0 0 0 1 0 0 1 0xC0E5 0x0000
+0 0x0001 0 0 0xEBBA 5 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xC5BB 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x3484 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x8AE7 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xDCC5 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x79AB 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x9A28 5 0 0 0 1 0 0 1 0x9A28 0x0000
+0 0x0001 0 0 0xDFF8 6 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 1 0 0x8437 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x9B21 6 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0xAD85 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0x05DD 6 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0001 0 0 0xD496 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xA137 6 0 0 0 1 0 0 1 0xA137 0x0000
+0 0x0001 0 0 0x0A44 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xC0C6 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x443B 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0x1EC2 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 1 0 0xAA36 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xEEB8 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0001 0 0 0xB4B1 7 0 0 0 1 0 0 1 0xB4B1 0x0000
+0 0x0005 0 0 0xB484 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 1 0 0x8ECF 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xFAA0 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x0B5B 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x1F03 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x0AE1 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xBD03 0 0 0 0 1 0 0 1 0xBD03 0x0000
+0 0x0005 0 0 0x8093 1 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0xE9A1 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x98E6 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xA3DA 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x5AD6 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xBA58 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x5ED8 1 0 0 0 1 0 0 1 0x5ED8 0x0000
+0 0x0005 0 0 0xA016 2 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 1 0 0xBD01 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x873C 2 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x99CE 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0xC11B 2 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x35B1 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x0DC8 2 0 0 0 1 0 0 1 0x0DC8 0x0000
+0 0x0005 0 0 0x4349 3 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x9EBA 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x71F0 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x89EB 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x7A36 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xA7D3 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x5FF2 3 0 0 0 1 0 0 1 0x5FF2 0x0000
+0 0x0005 0 0 0xDED7 4 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 1 0 0x31AC 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x3424 4 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0xA4D8 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0xAAE1 4 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x72EC 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xE079 4 0 0 0 1 0 0 1 0xE079 0x0000
+0 0x0005 0 0 0x56AC 5 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x28EE 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xAC65 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x6FA0 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0xE6F6 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x8A8C 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x7336 5 0 0 0 1 0 0 1 0x7336 0x0000
+0 0x0005 0 0 0x3DE9 6 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 1 0 0x115C 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x61B1 6 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0xA15A 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x5DFF 6 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x0005 0 0 0x8EA3 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xAE22 6 0 0 0 1 0 0 1 0xAE22 0x0000
+0 0x0005 0 0 0x2BCB 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0xB0C8 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x4266 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xD7B1 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 1 0 0x9579 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0x8AD7 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x0005 0 0 0xEDEF 7 0 0 0 1 0 0 1 0xEDEF 0x0000
+0 0x7FFF 0 0 0xB155 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 1 0 0xD574 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x94AF 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0xD6EC 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0xD1AC 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x1232 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xD397 0 0 0 0 1 0 0 1 0xD397 0x0000
+0 0x7FFF 0 0 0x4FDE 1 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x662E 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x0263 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xF467 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0xDE63 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x71B5 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x108C 1 0 0 0 1 0 0 1 0x108C 0x0000
+0 0x7FFF 0 0 0xE9D0 2 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 1 0 0x93FD 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xAEA0 2 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x7476 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x22D9 2 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x92F3 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x3D70 2 0 0 0 1 0 0 1 0x3D70 0x0000
+0 0x7FFF 0 0 0x7D33 3 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x1714 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x11FE 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x659D 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0xDC1A 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x1945 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x06BA 3 0 0 0 1 0 0 1 0x06BA 0x0000
+0 0x7FFF 0 0 0xF64B 4 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 1 0 0x3DDB 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x57F8 4 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x998A 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x7A64 4 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x0A29 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xD3D7 4 0 0 0 1 0 0 1 0xD3D7 0x0000
+0 0x7FFF 0 0 0x1B43 5 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x3A28 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xAEC5 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x4035 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x8144 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xF453 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x1F6B 5 0 0 0 1 0 0 1 0x1F6B 0x0000
+0 0x7FFF 0 0 0xB424 6 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 1 0 0x710D 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x6508 6 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x3E93 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x3D09 6 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x7FFF 0 0 0x57B4 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x7A9A 6 0 0 0 1 0 0 1 0x7A9A 0x0000
+0 0x7FFF 0 0 0x8C2A 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0x41C8 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x03D7 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0xF999 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 1 0 0xCCF1 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x1990 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x7FFF 0 0 0x8AF4 7 0 0 0 1 0 0 1 0x8AF4 0x0000
+0 0x8000 0 0 0x7F1B 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 1 0 0x8984 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xD891 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0x1A19 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xF21F 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0xA56F 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x00ED 0 0 0 0 1 0 0 1 0x00ED 0x0000
+0 0x8000 0 0 0x1C13 1 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 1 0 0x40F4 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x17A5 1 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0x3FCF 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x1983 1 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0x2307 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xF733 1 0 0 0 1 0 0 1 0xF733 0x0000
+0 0x8000 0 0 0x10E6 2 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 1 0 0x2C18 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xFAE0 2 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0xA1BD 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x5067 2 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0xA110 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x24BF 2 0 0 0 1 0 0 1 0x24BF 0x0000
+0 0x8000 0 0 0xB3DC 3 0 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 1 0 0xC587 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xC77E 3 1 0 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0x9BB5 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xB8BF 3 0 1 0 0 0 0 0 0x0000 0x0000
+0 0x8000 0 0 0x87A4 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x61D5 3 0 0 0 1 0 0 1 0x61D5 0x0000
+0 0x8000 0 0 0xA855 4 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xDB7E 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x3F5C 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x4156 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x01C9 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xC2AE 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x28E8 4 0 0 0 1 0 0 1 0x28E8 0x0000
+0 0x8000 0 0 0x5B6B 5 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x15FF 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xBF1D 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xEBF0 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xC2B2 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x163D 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xDCF9 5 0 0 0 1 0 0 1 0xDCF9 0x0000
+0 0x8000 0 0 0x1B2B 6 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xBEAD 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xFE07 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xA140 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0xD74D 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xD62A 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xEBF3 6 0 0 0 1 0 0 1 0xEBF3 0x0000
+0 0x8000 0 0 0x092D 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x7D7B 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x6FF2 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x8A49 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 1 0 0x24A6 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0xD98A 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0x8000 0 0 0x72E9 7 0 0 0 1 0 0 1 0x72E9 0x0000
+0 0xFFFF 0 0 0xDA09 0 0 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 1 0 0x42BF 0 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x0E62 0 1 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0xA6B0 0 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0xBF9B 0 0 1 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0x863C 0 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x3E2E 0 0 0 0 1 0 0 1 0x3E2E 0x0000
+0 0xFFFF 0 0 0xEDA4 1 0 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 1 0 0x3F0C 1 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xC0BB 1 1 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0x379E 1 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0xA304 1 0 1 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0x34CD 1 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x0282 1 0 0 0 1 0 0 1 0x0282 0x0000
+0 0xFFFF 0 0 0xF274 2 0 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 1 0 0x497B 2 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x78D1 2 1 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0xC700 2 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x16B0 2 0 1 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0x2F00 2 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x32D7 2 0 0 0 1 0 0 1 0x32D7 0x0000
+0 0xFFFF 0 0 0xC063 3 0 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 1 0 0x5BBA 3 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x0C06 3 1 0 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0xAED6 3 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x3E18 3 0 1 0 0 0 0 0 0x0000 0x0000
+0 0xFFFF 0 0 0x0D0A 3 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x3AED 3 0 0 0 1 0 0 1 0x3AED 0x0000
+0 0xFFFF 0 0 0xF6BE 4 0 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x91A9 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x9948 4 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x2D75 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x1291 4 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x7A03 4 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x36A7 4 0 0 0 1 0 0 1 0x36A7 0x0000
+0 0xFFFF 0 0 0x3327 5 0 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x1F4D 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xA603 5 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x5C60 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x2798 5 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x7BF7 5 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x5C0B 5 0 0 0 1 0 0 1 0x5C0B 0x0000
+0 0xFFFF 0 0 0x7FFB 6 0 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0xE885 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xC996 6 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x817B 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0xBC25 6 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xCB14 6 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xB358 6 0 0 0 1 0 0 1 0xB358 0x0000
+0 0xFFFF 0 0 0xD620 7 0 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0x2AA1 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xC02A 7 1 0 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x7874 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 1 0 0xD35E 7 0 1 0 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0x523C 7 0 0 1 0 0 0 1 0x0000 0x0000
+0 0xFFFF 0 0 0xD49E 7 0 0 0 1 0 0 1 0xD49E 0x0000
+C 0xF7AA 0 0x4FF6 0 0 0 0 0 0 1 0 0 0x0000 0x0000
+C 0x533E 0 0x3114 0 0 0 0 0 0 1 1 0 0x3114 0x3114
+C 0xE2D7 0 0x5F49 0 0 0 0 0 0 0 1 0 0xE2D7 0xE2D7
+C 0x65FA 0 0x4B09 0 0 0 0 0 0 1 0 0 0xE2D7 0xE2D7
+C 0x977B 0 0xD38F 0 0 0 0 0 0 1 0 0 0xE2D7 0xE2D7
+C 0x9D4C 0 0x0BD7 0 0 0 0 0 0 1 1 0 0x0BD7 0x0BD7
+C 0xC3F7 0 0x66B8 0 0 0 0 0 0 0 1 0 0xC3F7 0xC3F7
+C 0x7A47 0 0xA4E2 0 0 0 0 0 0 1 0 0 0xC3F7 0xC3F7
+C 0xD63A 0 0xF58C 0 0 0 0 0 0 0 1 0 0xD63A 0xD63A
+C 0x0E37 0 0xF66C 0 0 0 0 0 0 0 1 0 0x0E37 0x0E37
+C 0x1779 0 0xEF4E 0 0 0 0 0 0 0 0 0 0x0E37 0x0E37
+C 0x2376 0 0x6F4B 0 0 0 0 0 0 1 0 0 0x0E37 0x0E37
+C 0x6116 0 0x846A 0 0 0 0 0 0 0 0 0 0x0E37 0x0E37
+C 0x12D2 0 0x8290 0 0 0 0 0 0 0 0 0 0x0E37 0x0E37
+C 0xA078 0 0x5DD5 0 0 0 0 0 0 1 0 0 0x0E37 0x0E37
+C 0x2BFE 0 0x3C66 0 0 0 0 0 0 0 1 0 0x2BFE 0x2BFE
+C 0x9562 0 0x127F 0 0 0 0 0 0 1 1 0 0x127F 0x127F
+C 0xAC5C 0 0x0386 0 0 0 0 0 0 0 1 0 0xAC5C 0xAC5C
+C 0xA9B6 0 0xDF58 0 0 0 0 0 0 1 1 0 0xDF58 0xDF58
+C 0x27EB 0 0x6B91 0 0 0 0 0 0 1 1 0 0x6B91 0x6B91
+C 0x4037 0 0xA33B 0 0 0 0 0 0 0 1 0 0x4037 0x4037
+C 0x2709 0 0xDD78 0 0 0 0 0 0 0 1 0 0x2709 0x2709
+C 0x8079 0 0x319D 0 0 0 0 0 0 1 1 0 0x319D 0x319D
+C 0xE69C 0 0x9750 0 0 0 0 0 0 1 0 0 0x319D 0x319D
+C 0xAD53 0 0x3A01 0 0 0 0 0 0 1 1 0 0x3A01 0x3A01
+C 0x1E79 0 0x96BE 0 0 0 0 0 0 0 0 0 0x3A01 0x3A01
+C 0x5BB3 0 0xBDD6 0 0 0 0 0 0 1 0 0 0x3A01 0x3A01
+C 0x3768 0 0x4863 0 0 0 0 0 0 1 1 0 0x4863 0x4863
+C 0x99E3 0 0x5FB1 0 0 0 0 0 0 1 1 0 0x5FB1 0x5FB1
+C 0x9FF8 0 0x5A4E 0 0 0 0 0 0 0 0 0 0x5FB1 0x5FB1
+C 0x5CCB 0 0xC8A1 0 0 0 0 0 0 1 0 0 0x5FB1 0x5FB1
+C 0x881C 0 0x8AAB 0 0 0 0 0 0 1 0 0 0x5FB1 0x5FB1
+C 0x45E6 0 0x158F 0 0 0 0 0 0 1 1 0 0x158F 0x158F
+C 0x7E90 0 0xB54D 0 0 0 0 0 0 1 1 0 0xB54D 0xB54D
+C 0xE57E 0 0x2371 0 0 0 0 0 0 1 1 0 0x2371 0x2371
+C 0x3969 0 0x4D9C 0 0 0 0 0 0 1 0 0 0x2371 0x2371
+C 0x39B1 0 0x3964 0 0 0 0 0 0 0 0 0 0x2371 0x2371
+C 0xD553 0 0xC849 0 0 0 0 0 0 0 0 0 0x2371 0x2371
+C 0xCBFD 0 0x6324 0 0 0 0 0 0 0 0 0 0x2371 0x2371
+C 0x6776 0 0x8013 0 0 0 0 0 0 1 1 0 0x8013 0x8013
+</dataString></testData></entry></elementAttributes><pos x="0" y="780"/></visualElement>
   </visualElements>
   <wires>
-    <wire><p1 x="0" y="0"/><p2 x="20" y="0"/></wire>
-    <wire><p1 x="0" y="120"/><p2 x="20" y="120"/></wire>
-    <wire><p1 x="200" y="0"/><p2 x="180" y="0"/></wire>
-    <wire><p1 x="200" y="20"/><p2 x="180" y="20"/></wire>
-    <wire><p1 x="260" y="20"/><p2 x="280" y="20"/></wire>
-    <wire><p1 x="200" y="340"/><p2 x="180" y="340"/></wire>
-    <wire><p1 x="200" y="120"/><p2 x="180" y="120"/></wire>
-    <wire><p1 x="220" y="140"/><p2 x="240" y="140"/></wire>
-    <wire><p1 x="420" y="0"/><p2 x="400" y="0"/></wire>
-    <wire><p1 x="420" y="40"/><p2 x="400" y="40"/></wire>
-    <wire><p1 x="500" y="20"/><p2 x="520" y="20"/></wire>
-    <wire><p1 x="640" y="0"/><p2 x="620" y="0"/></wire>
-    <wire><p1 x="660" y="0"/><p2 x="680" y="0"/></wire>
-    <wire><p1 x="660" y="20"/><p2 x="680" y="20"/></wire>
-    <wire><p1 x="660" y="40"/><p2 x="680" y="40"/></wire>
-    <wire><p1 x="840" y="0"/><p2 x="820" y="0"/></wire>
-    <wire><p1 x="840" y="40"/><p2 x="820" y="40"/></wire>
-    <wire><p1 x="900" y="20"/><p2 x="920" y="20"/></wire>
-    <wire><p1 x="840" y="120"/><p2 x="820" y="120"/></wire>
-    <wire><p1 x="840" y="160"/><p2 x="820" y="160"/></wire>
-    <wire><p1 x="900" y="140"/><p2 x="920" y="140"/></wire>
-    <wire><p1 x="840" y="240"/><p2 x="820" y="240"/></wire>
-    <wire><p1 x="840" y="280"/><p2 x="820" y="280"/></wire>
-    <wire><p1 x="900" y="260"/><p2 x="920" y="260"/></wire>
-    <wire><p1 x="1060" y="100"/><p2 x="1040" y="100"/></wire>
-    <wire><p1 x="1060" y="120"/><p2 x="1040" y="120"/></wire>
-    <wire><p1 x="1060" y="140"/><p2 x="1040" y="140"/></wire>
-    <wire><p1 x="1120" y="120"/><p2 x="1140" y="120"/></wire>
-    <wire><p1 x="1300" y="120"/><p2 x="1280" y="120"/></wire>
-    <wire><p1 x="1300" y="200"/><p2 x="1280" y="200"/></wire>
-    <wire><p1 x="1300" y="260"/><p2 x="1280" y="260"/></wire>
-    <wire><p1 x="1300" y="320"/><p2 x="1280" y="320"/></wire>
+    <wire><p1 x="0" y="140"/><p2 x="40" y="140"/></wire>
+    <wire><p1 x="0" y="200"/><p2 x="80" y="200"/></wire>
+    <wire><p1 x="0" y="440"/><p2 x="760" y="440"/></wire>
+    <wire><p1 x="0" y="600"/><p2 x="1040" y="600"/></wire>
+    <wire><p1 x="40" y="140"/><p2 x="40" y="400"/></wire>
+    <wire><p1 x="40" y="140"/><p2 x="120" y="140"/></wire>
+    <wire><p1 x="40" y="400"/><p2 x="760" y="400"/></wire>
+    <wire><p1 x="80" y="200"/><p2 x="80" y="240"/></wire>
+    <wire><p1 x="80" y="200"/><p2 x="300" y="200"/></wire>
+    <wire><p1 x="80" y="240"/><p2 x="140" y="240"/></wire>
+    <wire><p1 x="100" y="160"/><p2 x="120" y="160"/></wire>
+    <wire><p1 x="180" y="140"/><p2 x="300" y="140"/></wire>
+    <wire><p1 x="180" y="160"/><p2 x="300" y="160"/></wire>
+    <wire><p1 x="180" y="180"/><p2 x="300" y="180"/></wire>
+    <wire><p1 x="180" y="240"/><p2 x="260" y="240"/></wire>
+    <wire><p1 x="220" y="0"/><p2 x="220" y="80"/></wire>
+    <wire><p1 x="220" y="80"/><p2 x="400" y="80"/></wire>
+    <wire><p1 x="260" y="220"/><p2 x="260" y="240"/></wire>
+    <wire><p1 x="260" y="220"/><p2 x="300" y="220"/></wire>
+    <wire><p1 x="300" y="0"/><p2 x="300" y="60"/></wire>
+    <wire><p1 x="300" y="60"/><p2 x="400" y="60"/></wire>
+    <wire><p1 x="320" y="140"/><p2 x="460" y="140"/></wire>
+    <wire><p1 x="380" y="0"/><p2 x="380" y="40"/></wire>
+    <wire><p1 x="380" y="40"/><p2 x="400" y="40"/></wire>
+    <wire><p1 x="420" y="40"/><p2 x="500" y="40"/></wire>
+    <wire><p1 x="460" y="80"/><p2 x="460" y="140"/></wire>
+    <wire><p1 x="460" y="80"/><p2 x="500" y="80"/></wire>
+    <wire><p1 x="560" y="60"/><p2 x="600" y="60"/></wire>
+    <wire><p1 x="620" y="60"/><p2 x="680" y="60"/></wire>
+    <wire><p1 x="620" y="80"/><p2 x="680" y="80"/></wire>
+    <wire><p1 x="620" y="100"/><p2 x="680" y="100"/></wire>
+    <wire><p1 x="620" y="120"/><p2 x="680" y="120"/></wire>
+    <wire><p1 x="620" y="140"/><p2 x="680" y="140"/></wire>
+    <wire><p1 x="740" y="100"/><p2 x="1180" y="100"/></wire>
+    <wire><p1 x="780" y="0"/><p2 x="780" y="400"/></wire>
+    <wire><p1 x="800" y="420"/><p2 x="920" y="420"/></wire>
+    <wire><p1 x="860" y="0"/><p2 x="860" y="460"/></wire>
+    <wire><p1 x="860" y="460"/><p2 x="920" y="460"/></wire>
+    <wire><p1 x="900" y="440"/><p2 x="900" y="700"/></wire>
+    <wire><p1 x="900" y="440"/><p2 x="920" y="440"/></wire>
+    <wire><p1 x="980" y="440"/><p2 x="1000" y="440"/></wire>
+    <wire><p1 x="1000" y="440"/><p2 x="1000" y="520"/></wire>
+    <wire><p1 x="1000" y="440"/><p2 x="1020" y="440"/></wire>
+    <wire><p1 x="1000" y="520"/><p2 x="1380" y="520"/></wire>
+    <wire><p1 x="1020" y="400"/><p2 x="1020" y="440"/></wire>
+    <wire><p1 x="1020" y="400"/><p2 x="1060" y="400"/></wire>
+    <wire><p1 x="1040" y="440"/><p2 x="1040" y="600"/></wire>
+    <wire><p1 x="1040" y="440"/><p2 x="1060" y="440"/></wire>
+    <wire><p1 x="1080" y="0"/><p2 x="1080" y="80"/></wire>
+    <wire><p1 x="1080" y="80"/><p2 x="1080" y="400"/></wire>
+    <wire><p1 x="1080" y="80"/><p2 x="1180" y="80"/></wire>
+    <wire><p1 x="1100" y="420"/><p2 x="1380" y="420"/></wire>
+    <wire><p1 x="1140" y="0"/><p2 x="1140" y="60"/></wire>
+    <wire><p1 x="1140" y="60"/><p2 x="1180" y="60"/></wire>
+    <wire><p1 x="1240" y="80"/><p2 x="1380" y="80"/></wire>
   </wires>
   <measurementOrdering/>
 </circuit>
