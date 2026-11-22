@@ -10,11 +10,11 @@
     },
     {
       "nombre": "SALTO_R",
-      "que_hace": "el PC y el banco cargan lo guardado en R"
+      "que_hace": "el PC y el banco cargan la cima de la pila R y la desapilan"
     },
     {
       "nombre": "GUARDA_R",
-      "que_hace": "R guarda PC+1 y el banco actual"
+      "que_hace": "apila en R el PC+1 y el banco actual"
     },
     {
       "nombre": "BANCO_RAM",
@@ -29,12 +29,40 @@
       "que_hace": "RAM de programas[B] = M[A], solo con banco ROM"
     },
     {
-      "nombre": "A_MITAD",
-      "que_hace": "A = A / 2: desplaza a la derecha y mantiene el signo"
+      "nombre": "GUARDA_C",
+      "que_hace": "C guarda PC+1"
     },
     {
       "nombre": "A_TECLA",
       "que_hace": "A = tecla pulsada, y la tecla se borra"
+    },
+    {
+      "nombre": "SI_CARRY",
+      "que_hace": "el PC carga C si el carry vale 1"
+    },
+    {
+      "nombre": "SI_NO_CARRY",
+      "que_hace": "el PC carga C si el carry vale 0"
+    },
+    {
+      "nombre": "ROTAR_SI",
+      "que_hace": "enciende el modo rotar"
+    },
+    {
+      "nombre": "ROTAR_NO",
+      "que_hace": "apaga el modo rotar"
+    },
+    {
+      "nombre": "ENCADENAR_SI",
+      "que_hace": "enciende el modo encadenar"
+    },
+    {
+      "nombre": "ENCADENAR_NO",
+      "que_hace": "apaga el modo encadenar"
+    },
+    {
+      "nombre": "A_R",
+      "que_hace": "A carga la cima de la pila R y la desapila"
     }
   ],
   "instrucciones": [
@@ -84,11 +112,11 @@
     },
     {
       "codigo": 6,
-      "texto": "A/2 => A",
+      "texto": "PC+1 => C",
       "cables": [
-        "A_MITAD"
+        "GUARDA_C"
       ],
-      "que_hace": "divide A entre 2"
+      "que_hace": "guarda en C la dirección de la siguiente línea (inicio de bucle)"
     },
     {
       "codigo": 7,
@@ -97,6 +125,62 @@
         "A_TECLA"
       ],
       "que_hace": "lee la tecla pulsada (0 si no hay)"
+    },
+    {
+      "codigo": 8,
+      "texto": "SI CARRY",
+      "cables": [
+        "SI_CARRY"
+      ],
+      "que_hace": "salta a C si la última operación de la ALU dio carry"
+    },
+    {
+      "codigo": 9,
+      "texto": "SI NO CARRY",
+      "cables": [
+        "SI_NO_CARRY"
+      ],
+      "que_hace": "salta a C si la última operación de la ALU no dio carry"
+    },
+    {
+      "codigo": 10,
+      "texto": "ROTAR",
+      "cables": [
+        "ROTAR_SI"
+      ],
+      "que_hace": "al desplazar, el bit que sale entra por el otro lado"
+    },
+    {
+      "codigo": 11,
+      "texto": "NO ROTAR",
+      "cables": [
+        "ROTAR_NO"
+      ],
+      "que_hace": "al desplazar vuelve a entrar un 0"
+    },
+    {
+      "codigo": 12,
+      "texto": "ENCADENAR",
+      "cables": [
+        "ENCADENAR_SI"
+      ],
+      "que_hace": "las sumas y restas suman el carry (números de varias palabras)"
+    },
+    {
+      "codigo": 13,
+      "texto": "NO ENCADENAR",
+      "cables": [
+        "ENCADENAR_NO"
+      ],
+      "que_hace": "las sumas y restas vuelven a ignorar el carry"
+    },
+    {
+      "codigo": 14,
+      "texto": "R => A",
+      "cables": [
+        "A_R"
+      ],
+      "que_hace": "saca la cima de la pila R a A"
     }
   ]
 }

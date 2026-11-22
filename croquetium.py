@@ -5,7 +5,8 @@ from pathlib import Path
 
 # Tabla de la ALU sacada de la hoja "Operation".
 # Cada byte son las 8 señales en este orden: SX ZX NX SY ZY NY F NO
-# El 0x08 era !2x y ahora es PC+1: mismas señales que x+1, pero el mux X coge el PC.
+# 08, 0A, 0C y 0E dividen el resultado entre 2 (antes eran !2x/PC+1, !2y, -2x y -2y).
+# La ROM da la operacion de base y una puerta (O3 y no O4 y no O0) enciende el desplazador.
 OPERACIONES = [
     (0x00, "0", 0x4A),
     (0x01, "1", 0x6F),
@@ -15,13 +16,13 @@ OPERACIONES = [
     (0x05, "y", 0x60),
     (0x06, "2y", 0x70),
     (0x07, "!x", 0x0D),
-    (0x08, "PC+1", 0x2F),
+    (0x08, "x/2", 0x0C),
     (0x09, "!y", 0x61),
-    (0x0A, "!2y", 0x71),
+    (0x0A, "y/2", 0x60),
     (0x0B, "-x", 0x0F),
-    (0x0C, "-2x", 0x8F),
+    (0x0C, "(x+y)/2", 0x02),
     (0x0D, "-y", 0x63),
-    (0x0E, "-2y", 0x73),
+    (0x0E, "(x-y)/2", 0x23),
     (0x0F, "x+1", 0x2F),
     (0x10, "y+1", 0x67),
     (0x11, "x-1", 0x0E),
@@ -42,11 +43,12 @@ OPERACIONES = [
 ]
 SENALES_ALU = ["SX", "ZX", "NX", "SY", "ZY", "NY", "F", "NO"]
 
-OP_PC = 0x08
 ROM_ALU = {op: rom for op, _, rom in OPERACIONES}
+MITADES = {op for op in ROM_ALU if op & 0b11001 == 0b01000}
 
 CONMUTATIVAS = {
     "x+y": "y+x",
+    "(x+y)/2": "(y+x)/2",
     "2x+y": "y+2x",
     "x+2y": "2y+x",
     "2x+2y": "2y+2x",
@@ -66,6 +68,7 @@ ORDEN_CONDICIONES = [">=0", "<=0", "!=0", ">0", "<0", "=0", "jmp"]
 QUE_SALTA = ["nunca", "> 0", "= 0", ">= 0", "< 0", "!= 0", "<= 0", "siempre"]
 
 PRIMERA_VARIABLE = 16
+NIVELES_PILA_R = 16
 MAX_NUMERO = 0x7FFF
 MASCARA = 0xFFFF
 TAM_RAM = 0x10000
@@ -76,13 +79,20 @@ SISTEMA_POR_DEFECTO = {
     "cables": [
         {"nombre": "PARA", "que_hace": "para el reloj"},
         {"nombre": "SALTO_C", "que_hace": "el PC carga C"},
-        {"nombre": "SALTO_R", "que_hace": "el PC y el banco cargan lo guardado en R"},
-        {"nombre": "GUARDA_R", "que_hace": "R guarda PC+1 y el banco actual"},
+        {"nombre": "SALTO_R", "que_hace": "el PC y el banco cargan la cima de la pila R y la desapilan"},
+        {"nombre": "GUARDA_R", "que_hace": "apila en R el PC+1 y el banco actual"},
         {"nombre": "BANCO_RAM", "que_hace": "las instrucciones salen de la RAM de programas"},
         {"nombre": "BANCO_ROM", "que_hace": "las instrucciones salen de la ROM"},
         {"nombre": "GRABA_PROG", "que_hace": "RAM de programas[B] = M[A], solo con banco ROM"},
-        {"nombre": "A_MITAD", "que_hace": "A = A / 2: desplaza a la derecha y mantiene el signo"},
+        {"nombre": "GUARDA_C", "que_hace": "C guarda PC+1"},
         {"nombre": "A_TECLA", "que_hace": "A = tecla pulsada, y la tecla se borra"},
+        {"nombre": "SI_CARRY", "que_hace": "el PC carga C si el carry vale 1"},
+        {"nombre": "SI_NO_CARRY", "que_hace": "el PC carga C si el carry vale 0"},
+        {"nombre": "ROTAR_SI", "que_hace": "enciende el modo rotar"},
+        {"nombre": "ROTAR_NO", "que_hace": "apaga el modo rotar"},
+        {"nombre": "ENCADENAR_SI", "que_hace": "enciende el modo encadenar"},
+        {"nombre": "ENCADENAR_NO", "que_hace": "apaga el modo encadenar"},
+        {"nombre": "A_R", "que_hace": "A carga la cima de la pila R y la desapila"},
     ],
     "instrucciones": [
         {"codigo": 1, "texto": "PARA", "cables": ["PARA"],
@@ -95,10 +105,24 @@ SISTEMA_POR_DEFECTO = {
          "que_hace": "vuelve a donde dice R, en su banco"},
         {"codigo": 5, "texto": "GRABA", "cables": ["GRABA_PROG"],
          "que_hace": "copia M[A] en la RAM de programas, en la dirección B"},
-        {"codigo": 6, "texto": "A/2 => A", "cables": ["A_MITAD"],
-         "que_hace": "divide A entre 2"},
+        {"codigo": 6, "texto": "PC+1 => C", "cables": ["GUARDA_C"],
+         "que_hace": "guarda en C la dirección de la siguiente línea (inicio de bucle)"},
         {"codigo": 7, "texto": "TECLA => A", "cables": ["A_TECLA"],
          "que_hace": "lee la tecla pulsada (0 si no hay)"},
+        {"codigo": 8, "texto": "SI CARRY", "cables": ["SI_CARRY"],
+         "que_hace": "salta a C si la última operación de la ALU dio carry"},
+        {"codigo": 9, "texto": "SI NO CARRY", "cables": ["SI_NO_CARRY"],
+         "que_hace": "salta a C si la última operación de la ALU no dio carry"},
+        {"codigo": 10, "texto": "ROTAR", "cables": ["ROTAR_SI"],
+         "que_hace": "al desplazar, el bit que sale entra por el otro lado"},
+        {"codigo": 11, "texto": "NO ROTAR", "cables": ["ROTAR_NO"],
+         "que_hace": "al desplazar vuelve a entrar un 0"},
+        {"codigo": 12, "texto": "ENCADENAR", "cables": ["ENCADENAR_SI"],
+         "que_hace": "las sumas y restas suman el carry (números de varias palabras)"},
+        {"codigo": 13, "texto": "NO ENCADENAR", "cables": ["ENCADENAR_NO"],
+         "que_hace": "las sumas y restas vuelven a ignorar el carry"},
+        {"codigo": 14, "texto": "R => A", "cables": ["A_R"],
+         "que_hace": "saca la cima de la pila R a A"},
     ],
 }
 
@@ -175,8 +199,6 @@ SISTEMA = cargar_sistema()
 
 
 def formas_de(plantilla):
-    if plantilla == "PC+1":
-        return [("PC+1", 0, 0)]
     textos = [plantilla]
     if plantilla in CONMUTATIVAS:
         textos.append(CONMUTATIVAS[plantilla])
@@ -203,7 +225,7 @@ for _op, _plantilla, _ in OPERACIONES:
 
 
 def usa_x(op):
-    return op != OP_PC and "x" in OPERACIONES[op][1]
+    return "x" in OPERACIONES[op][1]
 
 
 def usa_y(op):
@@ -348,24 +370,40 @@ def desensamblar(ins, sistema=None):
     return texto
 
 
-def alu(x, y, senales):
+def alu(x, y, senales, mitad=False, carry=0, rotar=False, encadenar=False):
     sx, zx, nx, sy, zy, ny, f, no = ((senales >> (7 - i)) & 1 for i in range(8))
+    sale = 0
     if sx:
-        x = (x << 1) & MASCARA
+        sale = x >> 15
+        x = ((x << 1) | (sale if rotar else 0)) & MASCARA
     if zx:
         x = 0
     if nx:
         x = ~x & MASCARA
     if sy:
-        y = (y << 1) & MASCARA
+        sale = y >> 15
+        y = ((y << 1) | (sale if rotar else 0)) & MASCARA
     if zy:
         y = 0
     if ny:
         y = ~y & MASCARA
-    salida = (x + y) & MASCARA if f else x & y
+    bit17 = 0
+    if f:
+        suma = x + y + (carry if encadenar else 0)
+        bit17 = suma >> 16
+        salida = suma & MASCARA
+    else:
+        salida = x & y
     if no:
         salida = ~salida & MASCARA
-    return salida
+    nuevo_carry = bit17 if f else sale
+    if mitad:
+        cae = salida & 1
+        # Sin rotar entra el bit 17 de la suma: la media sale bien aunque la suma se pase.
+        arriba = cae if rotar else bit17
+        salida = (salida >> 1) | (arriba << 15)
+        nuevo_carry = cae
+    return salida, nuevo_carry
 
 
 def con_signo(v):
@@ -385,8 +423,13 @@ class Croquetium:
         self.rom = [p for p, _ in programa]
         self.texto = [t for _, t in programa]
         self.A = self.B = self.C = self.PC = 0
-        self.R = 0
-        self.R_banco = 0
+        # Pila R: lista de (vuelta, banco), la cima al final.
+        self.pila_r = []
+        self.desbordes_r = 0
+        self.vacias_r = 0
+        self.carry = 0
+        self.rotar = 0
+        self.encadenar = 0
         self.banco = 0
         self.TECLA = 0
         self.M = [0] * TAM_RAM
@@ -401,13 +444,42 @@ class Croquetium:
         self.escritura_vista = 0
         self.parado = False
 
+    @property
+    def R(self):
+        return self.pila_r[-1][0] if self.pila_r else 0
+
+    @R.setter
+    def R(self, valor):
+        if self.pila_r:
+            self.pila_r[-1] = (valor, self.pila_r[-1][1])
+        else:
+            self.pila_r.append((valor, 0))
+
+    @property
+    def R_banco(self):
+        return self.pila_r[-1][1] if self.pila_r else 0
+
+    def apilar_r(self, vuelta, banco):
+        if len(self.pila_r) == NIVELES_PILA_R:
+            # En el chip la pila da la vuelta y pisa la mas vieja.
+            self.pila_r.pop(0)
+            self.desbordes_r += 1
+        self.pila_r.append((vuelta, banco))
+
+    def desapilar_r(self):
+        if not self.pila_r:
+            self.vacias_r += 1
+            return 0, 0
+        return self.pila_r.pop()
+
     def bucle_final(self):
         # Si vuelve a saltar al mismo sitio sin que nada haya cambiado, ya no sale nunca.
         # Tras una escritura los estados viejos no pueden repetirse, asi que se olvidan.
         if self.ultima_escritura != self.escritura_vista:
             self.vistos.clear()
             self.escritura_vista = self.ultima_escritura
-        estado = (self.PC, self.banco, self.A, self.B, self.C, self.R, self.ultima_escritura)
+        estado = (self.PC, self.banco, self.A, self.B, self.C, tuple(self.pila_r), self.carry,
+                  self.rotar, self.encadenar, self.ultima_escritura)
         if estado in self.vistos:
             return True
         self.vistos.add(estado)
@@ -446,13 +518,10 @@ class Croquetium:
         if d == 0 and j == 0:
             return self.paso_sistema(pc, (ins >> 8) & 0x7F)
 
-        if op == OP_PC:
-            x = pc
-        else:
-            x = self.M[self.A] if bx else self.A
+        x = self.M[self.A] if bx else self.A
         y = self.N[self.B] if by else self.B
 
-        salida = alu(x, y, ROM_ALU[op])
+        salida, self.carry = alu(x, y, ROM_ALU[op], op in MITADES, self.carry, self.rotar, self.encadenar)
         z = salida == 0
         n = bool(salida & 0x8000)
         p = not z and not n
@@ -492,20 +561,35 @@ class Croquetium:
         salta = False
         if "SALTO_C" in activo:
             nuevo_pc, salta = self.C, True
+        if "SI_CARRY" in activo and self.carry:
+            nuevo_pc, salta = self.C, True
+        if "SI_NO_CARRY" in activo and not self.carry:
+            nuevo_pc, salta = self.C, True
         if "SALTO_R" in activo:
-            nuevo_pc, nuevo_banco, salta = self.R, self.R_banco, True
+            nuevo_pc, nuevo_banco = self.desapilar_r()
+            salta = True
         if "BANCO_RAM" in activo:
             nuevo_banco = 1
         if "BANCO_ROM" in activo:
             nuevo_banco = 0
         if "GUARDA_R" in activo:
-            self.R, self.R_banco = (pc + 1) & MASCARA, banco_viejo
+            self.apilar_r((pc + 1) & MASCARA, banco_viejo)
         if "GRABA_PROG" in activo and banco_viejo == 0:
             self.P[self.B] = self.M[self.A]
             self.usadas_p.add(self.B)
             self.ultima_escritura = self.ciclos
-        if "A_MITAD" in activo:
-            self.A = (self.A >> 1) | (self.A & 0x8000)
+        if "A_R" in activo:
+            self.A = self.desapilar_r()[0]
+        if "ROTAR_SI" in activo:
+            self.rotar = 1
+        if "ROTAR_NO" in activo:
+            self.rotar = 0
+        if "ENCADENAR_SI" in activo:
+            self.encadenar = 1
+        if "ENCADENAR_NO" in activo:
+            self.encadenar = 0
+        if "GUARDA_C" in activo:
+            self.C = (pc + 1) & MASCARA
         if "A_TECLA" in activo:
             self.A, self.TECLA = self.TECLA, 0
             # Leer el teclado cuenta como cambio: un bucle que espera una tecla no es un bucle final.
@@ -541,7 +625,7 @@ class Croquetium:
 
     def resumen(self, variables):
         print(f"\nA={con_signo(self.A)}  B={con_signo(self.B)}  C={self.C}  R={self.R}  "
-              f"PC={self.PC}  banco={'RAM' if self.banco else 'ROM'}  ciclos={self.ciclos}")
+              f"PC={self.PC}  banco={'RAM' if self.banco else 'ROM'}  carry={self.carry}  ciclos={self.ciclos}")
         nombres = {v: k for k, v in variables.items()}
         for ram, usadas, letra in ((self.M, self.usadas_m, "M"), (self.N, self.usadas_n, "N"),
                                    (self.P, self.usadas_p, "P")):
@@ -566,6 +650,9 @@ def convertir(fuente):
             comp, salto = comp.split(";", 1)
         viejos = {"": "", "JGT": ">0", "JEQ": "=0", "JGE": ">=0",
                   "JLT": "<0", "JNE": "!=0", "JLE": "<=0", "JMP": "jmp"}
+        if comp == "PC+1" and destino == "C" and not salto:
+            salida.append(linea.replace(codigo.strip(), "PC+1 => C", 1))
+            continue
         if comp not in COMP or salto not in viejos:
             raise ErrorEnsamblado(f"línea {num}: no se entiende '{t}'")
         if not destino and not salto:
@@ -626,7 +713,10 @@ def datasheet(sistema=None):
         ["B", "16 bits", "dato, y dirección de la RAM N y de la RAM de programas al grabar"],
         ["C", "16 bits", "adónde salta el PC"],
         ["PC", "16 bits", "instrucción que toca"],
-        ["R", "16 bits + 1", "vuelta guardada por LANZA y VUELVE, con su banco"],
+        ["R", f"pila de {NIVELES_PILA_R} x (16 bits + 1)", "vueltas guardadas por LANZA y VUELVE, con su banco; RETORNA y R => A sacan la de arriba"],
+        ["carry", "1 bit", "lo que sobró en la última operación de la ALU"],
+        ["rotar", "1 bit", "modo: al desplazar, el bit que sale entra por el otro lado"],
+        ["encadenar", "1 bit", "modo: las sumas y restas suman también el carry"],
         ["banco", "1 bit", "0: instrucciones de la ROM; 1: de la RAM de programas"],
         ["TECLA", "16 bits", "última tecla pulsada (0 si no hay)"],
         ["RAM M", "64K x 16", "datos, dirección A"],
@@ -639,7 +729,19 @@ def datasheet(sistema=None):
     d += [
         "",
         "Flags: Z (resultado 0), N (negativo), P (positivo y no 0). Salen solos del resultado "
-        "de la ALU y no se guardan: el salto mira el de la misma instrucción. No hay acarreo ni desbordamiento.",
+        "de la ALU y no se guardan: el salto mira el de la misma instrucción. No hay desbordamiento.",
+        "",
+        "Carry: un biestable que se actualiza en cada operación de ALU (los números y las de sistema no lo tocan). "
+        "Guarda el bit 17 de las sumas y restas; en `2x` y `2y`, el bit 15 que se cae; en las de `/2`, el bit 0 "
+        "que se cae; en `&`, `|` y `!`, un 0. Se mira con `SI CARRY` y `SI NO CARRY` en la instrucción siguiente.",
+        "",
+        "Modo rotar (`ROTAR` / `NO ROTAR`): al desplazar, el bit que sale entra por el otro lado en el mismo ciclo. "
+        "Sin rotar, en `2x` entra un 0 y en las de `/2` entra el bit 17 de la suma (así `(A+B)/2` da la media "
+        "aunque la suma se pase de 16 bits).",
+        "",
+        "Modo encadenar (`ENCADENAR` / `NO ENCADENAR`): las operaciones que pasan por el sumador suman también "
+        "el carry, para números de varias palabras. Ojo: también lo suman las que usan el sumador por dentro "
+        "(`0`, `1`, `-1`, `x+1`, `x-1`, `-x`...): enciéndelo solo para la suma de arriba y apágalo después.",
         "",
         "## 2. Los tres tipos de instrucción",
         "",
@@ -667,7 +769,7 @@ def datasheet(sistema=None):
         ["`OPERACIÓN COND`", "`M-B <=0`", "calcula y salta si se cumple, sin guardar"],
         ["`jmp`", "`jmp`", "salta a C siempre"],
         ["`NOP`", "`NOP`", "no hace nada"],
-        ["instrucción de sistema", "`LANZA`, `A/2 => A`", "ver apartado 8"],
+        ["instrucción de sistema", "`LANZA`, `PC+1 => C`", "ver apartado 8"],
         ["`// texto`", "`// hola`", "comentario"],
     ])
     d += [
@@ -692,11 +794,13 @@ def datasheet(sistema=None):
         formas = [t for t, _, _ in formas_de(plantilla) if COMP[t][0] == op]
         bits = [str((rom >> (7 - i)) & 1) for i in range(8)]
         filas.append([f"{op:02X}", f"{op:05b}", f"`{plantilla}`", " ".join(f"`{f}`" for f in formas),
-                      f"{rom:02X}"] + bits)
-    d += tabla(["Op", "OOOOO", "Plantilla", "Se escribe", "ROM"] + SENALES_ALU, filas)
+                      f"{rom:02X}"] + bits + ["1" if op in MITADES else "0"])
+    d += tabla(["Op", "OOOOO", "Plantilla", "Se escribe", "ROM"] + SENALES_ALU + ["/2"], filas)
     d += [
         "",
-        "La 08 manda las señales de x+1 y un 74HC138 cambia la entrada X al PC.",
+        "La columna /2 no sale de la ROM: la enciende una puerta cuando O3 = 1, O4 = 0 y O0 = 0 "
+        "(operaciones 08, 0A, 0C y 0E). Entonces el resultado pasa por el desplazador a la derecha "
+        "de la salida (cableado movido un bit y 4 x 74HC157 para elegir), y por arriba entra un 0.",
         "",
         "## 6. Destinos (DDDDD)",
         "",
@@ -733,12 +837,12 @@ def datasheet(sistema=None):
         "3. Para saltar, C ya tiene que tener la dirección. Si la misma instrucción escribe C y salta, salta al C viejo.",
         "4. `@algo` machaca A.",
         "5. Negativos: `@5` y luego `-A => A`.",
-        "6. No hay acarreo: 32767 + 1 da -32768 sin avisar.",
+        "6. 32767 + 1 da -32768 sin avisar: el carry no mira el signo, mira el bit 17.",
         "7. La RAM real arranca con basura: inicializa lo que uses.",
         "8. Ojo con `M =0`: es saltar si M vale 0. Para guardar un 0 es `0 => M`.",
         "9. `GRABA` solo funciona ejecutando desde la ROM: un programa en la RAM de programas no puede reescribirse.",
-        "10. R guarda una sola vuelta. Un segundo LANZA o VUELVE la pisa.",
-        "11. `A/2 => A` mantiene el signo y redondea hacia abajo: -3 da -2.",
+        f"10. La pila R guarda {NIVELES_PILA_R} vueltas. Con una más se pisa la más vieja (el IDE avisa).",
+        "11. `/2` mete un 0 por arriba: con negativos no da la mitad (-4/2 da 32766). En `(A+B)/2` la suma se pasa de 16 bits antes de dividir: con números grandes sale mal.",
         "",
         "## 11. Archivos",
         "",

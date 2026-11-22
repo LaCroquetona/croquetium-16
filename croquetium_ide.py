@@ -29,6 +29,8 @@ BIT_APAGADO = "#2e3133"
 VELOCIDADES = [1, 2, 5, 10, 25, 50, 100, 500, 2000, "max"]
 FILAS_RAM = 16
 REGISTROS = ("A", "B", "C", "PC", "R", "TECLA")
+# Bits de estado: biestables de un solo bit que enseña el panel como luces.
+ESTADOS = ("carry", "rotar", "encadenar")
 ORIENTACIONES = ("filas", "columnas")
 MAX_PALABRAS = 64
 
@@ -69,7 +71,7 @@ def mapa_lineas(fuente):
 
 
 def es_sistema(ins):
-    return not ins & 0x8000 and (ins >> 3) & 0xFF == 0
+    return not ins & 0x8000 and ins & 0xFF == 0
 
 
 def campos(ins):
@@ -86,10 +88,7 @@ def campos(ins):
     d = (ins >> 3) & 0x1F
     j = ins & 0x7
     plantilla = cq.OPERACIONES[op][1]
-    if op == cq.OP_PC:
-        x = "PC"
-    else:
-        x = ("M" if bx else "A") if cq.usa_x(op) else "-"
+    x = ("M" if bx else "A") if cq.usa_x(op) else "-"
     y = ("N" if by else "B") if cq.usa_y(op) else "-"
     destino = "".join(letra for letra, bit in cq.DESTINOS.items() if d >> bit & 1)
     return [
@@ -162,7 +161,7 @@ class PanelRAM:
         self.antes = {}
 
         marco = tk.Frame(padre, bg=PANEL, padx=6, pady=6)
-        marco.pack(side="left", fill="both", expand=True, padx=4)
+        padre.add(marco, weight=1)
         cabecera = tk.Frame(marco, bg=PANEL)
         cabecera.pack(fill="x", pady=(0, 4))
         self.titulo = tk.Label(cabecera, text=f"RAM {letra}", font=FUENTE_GRANDE, fg=AMBAR, bg=PANEL)
@@ -621,6 +620,7 @@ class IDE:
         self.ultimo = None
         self.cambiadas = set()
         self.regs_cambiados = set()
+        self.aviso = None
 
         self.montar_estilo()
         self.montar_menu()
@@ -643,6 +643,7 @@ class IDE:
         estilo.configure("Treeview.Heading", background=PANEL, foreground=GRIS, font=FUENTE, relief="flat")
         estilo.map("Treeview", background=[("selected", "#44484a")])
         estilo.configure("TPanedwindow", background=FONDO)
+        estilo.configure("Sash", sashthickness=8, background=PANEL)
         estilo.configure("TNotebook", background=FONDO, borderwidth=0)
         estilo.configure("TNotebook.Tab", background=PANEL, foreground=GRIS, font=FUENTE, padding=(12, 4))
         estilo.map("TNotebook.Tab", background=[("selected", FONDO)], foreground=[("selected", AMBAR)])
@@ -774,8 +775,17 @@ class IDE:
             valor.bind("<Double-1>", lambda e, n=nombre: self.editar_registro(n))
             self.valores_reg[nombre] = (valor, hexa)
 
+        luces = tk.Frame(registros, bg=PANEL)
+        luces.grid(row=len(REGISTROS), column=0, columnspan=3, sticky="w", pady=(6, 0))
+        self.luces = {}
+        for nombre in ESTADOS:
+            luz = tk.Label(luces, font=FUENTE, bg=PANEL, cursor="hand2")
+            luz.pack(side="left", padx=(0, 10))
+            luz.bind("<Double-1>", lambda e, n=nombre: self.cambiar_estado(n))
+            self.luces[nombre] = luz
+
         self.info_ultima = {}
-        for fila, nombre in enumerate(("banco", "R vuelve a", "ALU", "flag", "salto", "ciclos"), start=len(REGISTROS)):
+        for fila, nombre in enumerate(("banco", "pila R", "ALU", "flag", "salto", "ciclos"), start=len(REGISTROS) + 1):
             etiqueta(registros, nombre, anchor="w").grid(row=fila, column=0, sticky="w", pady=(6 if nombre == "banco" else 0, 0))
             valor = etiqueta(registros, "", TEXTO, anchor="e")
             valor.grid(row=fila, column=1, columnspan=2, sticky="e")
@@ -794,9 +804,12 @@ class IDE:
         self.bits.tag_configure("tenue", foreground=GRIS)
         self.texto_cables = etiqueta(instruccion, "", ROSA, anchor="w", justify="left", wraplength=520)
         self.texto_cables.pack(anchor="w", pady=(4, 0))
+        self.texto_pila = etiqueta(instruccion, "", GRIS, anchor="w", justify="left", wraplength=520)
+        self.texto_pila.pack(anchor="w", side="bottom")
 
-        memorias = tk.Frame(padre, bg=FONDO)
-        memorias.pack(fill="both", expand=True)
+        # La raya entre M y N se arrastra para dar mas sitio a una de las dos.
+        memorias = ttk.PanedWindow(padre, orient="horizontal")
+        memorias.pack(fill="both", expand=True, padx=4)
         self.ram_m = PanelRAM(memorias, self, "M", "A")
         self.ram_n = PanelRAM(memorias, self, "N", "B")
 
@@ -819,12 +832,13 @@ class IDE:
 
         hoja = tk.Frame(interior, bg=FONDO)
         interior.add(hoja, text="ROM de la ALU")
-        marco, tabla = nueva_tabla(hoja, ("op", "OOOOO", "operación", "byte") + tuple(cq.SENALES_ALU),
-                                   (40, 70, 90, 50) + (40,) * 8, 32)
+        marco, tabla = nueva_tabla(hoja, ("op", "OOOOO", "operación", "byte") + tuple(cq.SENALES_ALU) + ("/2",),
+                                   (40, 70, 90, 50) + (40,) * 9, 32)
         marco.pack(fill="both", expand=True)
         for op, plantilla, rom in cq.OPERACIONES:
             bits = [(rom >> (7 - i)) & 1 for i in range(8)]
-            tabla.insert("", "end", values=(f"{op:02X}", f"{op:05b}", plantilla, f"{rom:02X}", *bits))
+            mitad = 1 if op in cq.MITADES else 0
+            tabla.insert("", "end", values=(f"{op:02X}", f"{op:05b}", plantilla, f"{rom:02X}", *bits, mitad))
 
         self.hoja_sistema = tk.Frame(interior, bg=FONDO)
         interior.add(self.hoja_sistema, text="ROM de sistema")
@@ -959,7 +973,7 @@ class IDE:
                 continue
             inicio = len(codigo) - len(codigo.lstrip())
             final = len(codigo.rstrip())
-            if limpio.startswith("("):
+            if limpio.startswith("(") and limpio.endswith(")"):
                 self.editor.tag_add("etiqueta", f"{num}.{inicio}", f"{num}.{final}")
             elif limpio.startswith("@"):
                 self.editor.tag_add("numero", f"{num}.{inicio}", f"{num}.{final}")
@@ -1042,9 +1056,14 @@ class IDE:
         if m.fuera_del_programa():
             self.fin = "se acabo el programa"
             return
-        antes = {n: getattr(m, n) for n in REGISTROS}
+        antes = {n: getattr(m, n) for n in REGISTROS + ESTADOS}
+        desbordes, vacias = m.desbordes_r, m.vacias_r
         ins = m.instruccion_actual()
         r = m.paso()
+        if m.desbordes_r != desbordes:
+            self.aviso = f"Pila R llena en {r['pc']}: se ha pisado la vuelta más vieja"
+        elif m.vacias_r != vacias:
+            self.aviso = f"Pila R vacía en {r['pc']}: no había vuelta que sacar (sale 0)"
         self.ultimo = r
         if not ins & 0x8000:
             d = (ins >> 3) & 0x1F
@@ -1074,6 +1093,13 @@ class IDE:
         self.ram_m.vistazo = self.ram_n.vistazo = None
         self.avanzar()
         self.refrescar()
+        self.dar_aviso()
+
+    def dar_aviso(self):
+        if self.aviso:
+            self.parar()
+            self.estado(self.aviso, AMBAR)
+            self.aviso = None
 
     def correr(self):
         if self.corriendo:
@@ -1105,11 +1131,12 @@ class IDE:
         self.ram_m.vistazo = self.ram_n.vistazo = None
         for _ in range(pasos):
             self.avanzar()
-            if self.fin:
+            if self.fin or self.aviso:
                 break
         if self.fin:
             self.parar()
         self.refrescar()
+        self.dar_aviso()
         if self.corriendo:
             self.raiz.after(espera, self.tic)
 
@@ -1129,7 +1156,21 @@ class IDE:
         r = self.ultimo
         info = self.info_ultima
         info["banco"].config(text="RAM programas" if m.banco else "ROM", fg=ROSA if m.banco else TEXTO)
-        info["R vuelve a"].config(text=f"{'RAM' if m.R_banco else 'ROM'} {m.R}")
+        info["pila R"].config(text=f"{len(m.pila_r)}/{cq.NIVELES_PILA_R}")
+        for nombre, luz in self.luces.items():
+            encendida = getattr(m, nombre)
+            if nombre in self.regs_cambiados:
+                color = AMBAR
+            elif nombre in self.inputs["reg"]:
+                color = AZUL
+            else:
+                color = VERDE if encendida else GRIS
+            luz.config(text=f"{'●' if encendida else '○'} {nombre}", fg=color)
+        if m.pila_r:
+            vueltas = " · ".join(f"{'P ' if banco else ''}{v}" for v, banco in reversed(m.pila_r))
+            self.texto_pila.config(text=f"pila R, de arriba abajo: {vueltas}")
+        else:
+            self.texto_pila.config(text="pila R vacía")
         info["ALU"].config(text=str(cq.con_signo(r["salida"])) if r and r["salida"] is not None else "-")
         info["flag"].config(text=(r["flags"] or "-") if r else "-")
         info["salto"].config(text=("sí" if r["salta"] else "no") if r else "-")
@@ -1214,6 +1255,14 @@ class IDE:
         valor = self.pedir_valor(nombre, getattr(self.maquina, nombre))
         if valor is None:
             return
+        setattr(self.maquina, nombre, valor)
+        self.inputs["reg"][nombre] = valor
+        self.maquina.vistos.clear()
+        self.fin = None
+        self.refrescar()
+
+    def cambiar_estado(self, nombre):
+        valor = 0 if getattr(self.maquina, nombre) else 1
         setattr(self.maquina, nombre, valor)
         self.inputs["reg"][nombre] = valor
         self.maquina.vistos.clear()
