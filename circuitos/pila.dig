@@ -1,159 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <circuit>
   <version>2</version>
-  <attributes><entry><string>Description</string><string>Pila de retornos R: 16 casillas de 17 bits (vuelta + banco) y un contador de 4 bits (SP) que apunta a la primera libre. Apilar escribe en SP y sube; desapilar baja. La cima es SP-1. Con 16 llenas, apilar pisa la más vieja porque el contador da la vuelta.</string></entry></attributes>
+  <attributes>
+    <entry><string>Description</string><string>Pila de retornos R: 16 casillas de 17 bits (vuelta + banco) y un contador de 4 bits (SP) que apunta a la primera libre. Apilar (GUARDA-R) escribe en SP y sube; desapilar (SALTO-R o A-R) baja. La cima es SP-1. Con 16 llenas, apilar pisa la más vieja porque el contador da la vuelta.</string></entry>
+    <entry><string>shapeType</string><shapeType>LAYOUT</shapeType></entry>
+    <entry><string>Width</string><int>14</int></entry>
+    <entry><string>Height</string><int>8</int></entry>
+  </attributes>
   <visualElements>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>vuelta</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="0"/></visualElement>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>banco</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="60"/></visualElement>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>apila</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="120"/></visualElement>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>desapila</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="180"/></visualElement>
-    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>Clk</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="240"/></visualElement>
-    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="320"/></visualElement>
-    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="0" y="380"/></visualElement>
-    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>15</long></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="0" y="440"/></visualElement>
-    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>SP: sube al apilar, baja al desapilar</string></entry></elementAttributes><pos x="260" y="-60"/></visualElement>
-    <visualElement><elementName>Or</elementName><elementAttributes></elementAttributes><pos x="260" y="0"/></visualElement>
-    <visualElement><elementName>CounterPreset</elementName><elementAttributes><entry><string>Bits</string><int>4</int></entry><entry><string>Label</string><string>SP</string></entry></elementAttributes><pos x="480" y="0"/></visualElement>
-    <visualElement><elementName>Add</elementName><elementAttributes><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="480" y="220"/></visualElement>
-    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>16 casillas de 17 bits</string></entry></elementAttributes><pos x="760" y="-60"/></visualElement>
-    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>16,1</string></entry><entry><string>Output Splitting</string><string>17</string></entry></elementAttributes><pos x="760" y="0"/></visualElement>
-    <visualElement><elementName>RegisterFile</elementName><elementAttributes><entry><string>Bits</string><int>17</int></entry><entry><string>AddrBits</string><int>4</int></entry><entry><string>Label</string><string>pila</string></entry></elementAttributes><pos x="960" y="0"/></visualElement>
-    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>17</string></entry><entry><string>Output Splitting</string><string>16,1</string></entry></elementAttributes><pos x="1220" y="0"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>cima</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="1460" y="0"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>cimaBanco</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1460" y="60"/></visualElement>
-    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>SP</string></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="1460" y="120"/></visualElement>
-    <visualElement><elementName>Testcase</elementName><elementAttributes><entry><string>Label</string><string>apilar y desapilar</string></entry><entry><string>Testdata</string><testData><dataString>Clk vuelta banco apila desapila cima cimaBanco
-C 10 0 1 0 10 0
-C 20 1 1 0 20 1
-C 0 0 0 1 10 0
-C 30 0 1 0 30 0
-C 0 0 0 1 10 0
-C 0 0 0 1 X X
-C 101 1 1 0 101 1
-C 102 0 1 0 102 0
-C 103 1 1 0 103 1
-C 104 0 1 0 104 0
-C 105 1 1 0 105 1
-C 106 0 1 0 106 0
-C 107 1 1 0 107 1
-C 108 0 1 0 108 0
-C 109 1 1 0 109 1
-C 110 0 1 0 110 0
-C 111 1 1 0 111 1
-C 112 0 1 0 112 0
-C 113 1 1 0 113 1
-C 114 0 1 0 114 0
-C 115 1 1 0 115 1
-C 116 0 1 0 116 0
-C 117 1 1 0 117 1
-C 0 0 0 1 116 0
-C 0 0 0 1 115 1
-C 0 0 0 1 114 0
-C 0 0 0 1 113 1
-C 0 0 0 1 112 0
-C 0 0 0 1 111 1
-C 0 0 0 1 110 0
-C 0 0 0 1 109 1
-C 0 0 0 1 108 0
-C 0 0 0 1 107 1
-C 0 0 0 1 106 0
-C 0 0 0 1 105 1
-C 0 0 0 1 104 0
-C 0 0 0 1 103 1
-C 0 0 0 1 102 0
-</dataString></testData></entry></elementAttributes><pos x="0" y="520"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>A-R</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="260" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>SALTO-R</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="320" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>GUARDA-R</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="520" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>vuelta</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="140"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>banco</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="0" y="200"/></visualElement>
+    <visualElement><elementName>Clock</elementName><elementAttributes><entry><string>Label</string><string>Clk</string></entry><entry><string>rotation</string><rotation rotation="1"/></entry></elementAttributes><pos x="640" y="660"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>cima</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="1320" y="140"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>cimaBanco</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1320" y="200"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>SP</string></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="1320" y="520"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Se apila la vuelta
+y su banco (17 bits)</string></entry></elementAttributes><pos x="20" y="60"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>SP sube al apilar
+y baja al desapilar</string></entry></elementAttributes><pos x="360" y="460"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>La cima es SP-1</string></entry></elementAttributes><pos x="980" y="400"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>16 casillas</string></entry></elementAttributes><pos x="1000" y="280"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>16,1</string></entry><entry><string>Output Splitting</string><string>17</string></entry></elementAttributes><pos x="120" y="140"/></visualElement>
+    <visualElement><elementName>Or</elementName><elementAttributes></elementAttributes><pos x="360" y="240"/></visualElement>
+    <visualElement><elementName>Or</elementName><elementAttributes></elementAttributes><pos x="560" y="200"/></visualElement>
+    <visualElement><elementName>CounterPreset</elementName><elementAttributes><entry><string>Bits</string><int>4</int></entry><entry><string>Label</string><string>SP</string></entry></elementAttributes><pos x="700" y="300"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="680" y="360"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry></elementAttributes><pos x="660" y="400"/></visualElement>
+    <visualElement><elementName>Add</elementName><elementAttributes><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="840" y="420"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>15</long></entry><entry><string>Bits</string><int>4</int></entry></elementAttributes><pos x="820" y="440"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry></elementAttributes><pos x="820" y="460"/></visualElement>
+    <visualElement><elementName>RegisterFile</elementName><elementAttributes><entry><string>Bits</string><int>17</int></entry><entry><string>AddrBits</string><int>4</int></entry><entry><string>Label</string><string>pila</string></entry></elementAttributes><pos x="1000" y="140"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>17</string></entry><entry><string>Output Splitting</string><string>16,1</string></entry></elementAttributes><pos x="1160" y="140"/></visualElement>
+    <visualElement><elementName>Testcase</elementName><elementAttributes><entry><string>Label</string><string>apilar y desapilar</string></entry><entry><string>Testdata</string><testData><dataString>Clk vuelta banco GUARDA-R SALTO-R A-R cima cimaBanco
+C 10 0 1 0 0 10 0
+C 20 1 1 0 0 20 1
+C 0 0 0 1 0 10 0
+C 30 0 1 0 0 30 0
+C 0 0 0 0 1 10 0
+C 0 0 0 1 0 X X
+C 101 1 1 0 0 101 1
+C 102 0 1 0 0 102 0
+C 103 1 1 0 0 103 1
+C 104 0 1 0 0 104 0
+C 105 1 1 0 0 105 1
+C 106 0 1 0 0 106 0
+C 107 1 1 0 0 107 1
+C 108 0 1 0 0 108 0
+C 109 1 1 0 0 109 1
+C 110 0 1 0 0 110 0
+C 111 1 1 0 0 111 1
+C 112 0 1 0 0 112 0
+C 113 1 1 0 0 113 1
+C 114 0 1 0 0 114 0
+C 115 1 1 0 0 115 1
+C 116 0 1 0 0 116 0
+C 117 1 1 0 0 117 1
+C 0 0 0 1 0 116 0
+C 0 0 0 0 1 115 1
+C 0 0 0 1 0 114 0
+C 0 0 0 0 1 113 1
+C 0 0 0 1 0 112 0
+C 0 0 0 0 1 111 1
+C 0 0 0 1 0 110 0
+C 0 0 0 0 1 109 1
+C 0 0 0 1 0 108 0
+C 0 0 0 0 1 107 1
+C 0 0 0 1 0 106 0
+C 0 0 0 0 1 105 1
+C 0 0 0 1 0 104 0
+C 0 0 0 0 1 103 1
+C 0 0 0 1 0 102 0
+</dataString></testData></entry></elementAttributes><pos x="0" y="740"/></visualElement>
   </visualElements>
   <wires>
-    <wire><p1 x="320" y="20"/><p2 x="340" y="20"/></wire>
-    <wire><p1 x="340" y="5"/><p2 x="340" y="20"/></wire>
-    <wire><p1 x="460" y="0"/><p2 x="480" y="0"/></wire>
-    <wire><p1 x="460" y="0"/><p2 x="460" y="5"/></wire>
-    <wire><p1 x="340" y="5"/><p2 x="460" y="5"/></wire>
-    <wire><p1 x="780" y="0"/><p2 x="800" y="0"/></wire>
-    <wire><p1 x="940" y="0"/><p2 x="960" y="0"/></wire>
-    <wire><p1 x="800" y="0"/><p2 x="940" y="0"/></wire>
-    <wire><p1 x="1040" y="0"/><p2 x="1060" y="0"/></wire>
-    <wire><p1 x="1200" y="0"/><p2 x="1220" y="0"/></wire>
-    <wire><p1 x="1060" y="0"/><p2 x="1200" y="0"/></wire>
-    <wire><p1 x="1240" y="0"/><p2 x="1260" y="0"/></wire>
-    <wire><p1 x="1440" y="0"/><p2 x="1460" y="0"/></wire>
-    <wire><p1 x="1260" y="0"/><p2 x="1440" y="0"/></wire>
-    <wire><p1 x="1240" y="20"/><p2 x="1260" y="20"/></wire>
-    <wire><p1 x="1260" y="20"/><p2 x="1260" y="45"/></wire>
-    <wire><p1 x="1440" y="60"/><p2 x="1460" y="60"/></wire>
-    <wire><p1 x="1440" y="45"/><p2 x="1440" y="60"/></wire>
-    <wire><p1 x="1260" y="45"/><p2 x="1440" y="45"/></wire>
-    <wire><p1 x="540" y="220"/><p2 x="560" y="220"/></wire>
-    <wire><p1 x="560" y="100"/><p2 x="560" y="220"/></wire>
-    <wire><p1 x="940" y="80"/><p2 x="960" y="80"/></wire>
-    <wire><p1 x="940" y="80"/><p2 x="940" y="100"/></wire>
-    <wire><p1 x="940" y="100"/><p2 x="960" y="100"/></wire>
-    <wire><p1 x="560" y="100"/><p2 x="940" y="100"/></wire>
-    <wire><p1 x="0" y="180"/><p2 x="20" y="180"/></wire>
-    <wire><p1 x="20" y="45"/><p2 x="20" y="180"/></wire>
-    <wire><p1 x="240" y="40"/><p2 x="260" y="40"/></wire>
-    <wire><p1 x="240" y="40"/><p2 x="240" y="45"/></wire>
-    <wire><p1 x="460" y="40"/><p2 x="480" y="40"/></wire>
-    <wire><p1 x="460" y="40"/><p2 x="460" y="45"/></wire>
-    <wire><p1 x="20" y="45"/><p2 x="240" y="45"/></wire>
-    <wire><p1 x="240" y="45"/><p2 x="460" y="45"/></wire>
-    <wire><p1 x="0" y="440"/><p2 x="20" y="440"/></wire>
-    <wire><p1 x="20" y="345"/><p2 x="20" y="440"/></wire>
-    <wire><p1 x="460" y="240"/><p2 x="480" y="240"/></wire>
-    <wire><p1 x="460" y="240"/><p2 x="460" y="345"/></wire>
-    <wire><p1 x="20" y="345"/><p2 x="460" y="345"/></wire>
-    <wire><p1 x="0" y="320"/><p2 x="20" y="320"/></wire>
-    <wire><p1 x="20" y="185"/><p2 x="20" y="320"/></wire>
-    <wire><p1 x="460" y="80"/><p2 x="480" y="80"/></wire>
-    <wire><p1 x="460" y="80"/><p2 x="460" y="100"/></wire>
-    <wire><p1 x="460" y="100"/><p2 x="460" y="185"/></wire>
-    <wire><p1 x="460" y="100"/><p2 x="480" y="100"/></wire>
-    <wire><p1 x="460" y="100"/><p2 x="460" y="185"/></wire>
+    <wire><p1 x="0" y="140"/><p2 x="120" y="140"/></wire>
+    <wire><p1 x="0" y="200"/><p2 x="80" y="200"/></wire>
+    <wire><p1 x="80" y="160"/><p2 x="80" y="200"/></wire>
+    <wire><p1 x="80" y="160"/><p2 x="120" y="160"/></wire>
+    <wire><p1 x="140" y="140"/><p2 x="1000" y="140"/></wire>
+    <wire><p1 x="260" y="0"/><p2 x="260" y="280"/></wire>
+    <wire><p1 x="260" y="280"/><p2 x="360" y="280"/></wire>
+    <wire><p1 x="320" y="0"/><p2 x="320" y="240"/></wire>
+    <wire><p1 x="320" y="240"/><p2 x="360" y="240"/></wire>
+    <wire><p1 x="420" y="260"/><p2 x="440" y="260"/></wire>
+    <wire><p1 x="440" y="260"/><p2 x="440" y="340"/></wire>
     <wire><p1 x="440" y="260"/><p2 x="480" y="260"/></wire>
-    <wire><p1 x="440" y="185"/><p2 x="440" y="260"/></wire>
-    <wire><p1 x="20" y="185"/><p2 x="440" y="185"/></wire>
-    <wire><p1 x="440" y="185"/><p2 x="460" y="185"/></wire>
-    <wire><p1 x="0" y="0"/><p2 x="20" y="0"/></wire>
-    <wire><p1 x="20" y="-15"/><p2 x="20" y="0"/></wire>
-    <wire><p1 x="740" y="0"/><p2 x="760" y="0"/></wire>
-    <wire><p1 x="740" y="-15"/><p2 x="740" y="0"/></wire>
-    <wire><p1 x="20" y="-15"/><p2 x="740" y="-15"/></wire>
-    <wire><p1 x="0" y="60"/><p2 x="40" y="60"/></wire>
-    <wire><p1 x="40" y="60"/><p2 x="40" y="105"/></wire>
-    <wire><p1 x="740" y="20"/><p2 x="760" y="20"/></wire>
-    <wire><p1 x="740" y="20"/><p2 x="740" y="105"/></wire>
-    <wire><p1 x="40" y="105"/><p2 x="740" y="105"/></wire>
-    <wire><p1 x="0" y="380"/><p2 x="40" y="380"/></wire>
-    <wire><p1 x="40" y="225"/><p2 x="40" y="380"/></wire>
-    <wire><p1 x="420" y="60"/><p2 x="480" y="60"/></wire>
-    <wire><p1 x="420" y="60"/><p2 x="420" y="225"/></wire>
-    <wire><p1 x="40" y="225"/><p2 x="420" y="225"/></wire>
-    <wire><p1 x="0" y="120"/><p2 x="40" y="120"/></wire>
-    <wire><p1 x="220" y="0"/><p2 x="260" y="0"/></wire>
-    <wire><p1 x="220" y="0"/><p2 x="220" y="120"/></wire>
-    <wire><p1 x="920" y="20"/><p2 x="960" y="20"/></wire>
-    <wire><p1 x="920" y="20"/><p2 x="920" y="120"/></wire>
-    <wire><p1 x="40" y="120"/><p2 x="220" y="120"/></wire>
-    <wire><p1 x="220" y="120"/><p2 x="920" y="120"/></wire>
-    <wire><p1 x="0" y="240"/><p2 x="60" y="240"/></wire>
-    <wire><p1 x="60" y="125"/><p2 x="60" y="240"/></wire>
-    <wire><p1 x="440" y="20"/><p2 x="480" y="20"/></wire>
-    <wire><p1 x="440" y="20"/><p2 x="440" y="125"/></wire>
-    <wire><p1 x="900" y="60"/><p2 x="960" y="60"/></wire>
-    <wire><p1 x="900" y="60"/><p2 x="900" y="125"/></wire>
-    <wire><p1 x="60" y="125"/><p2 x="440" y="125"/></wire>
-    <wire><p1 x="440" y="125"/><p2 x="900" y="125"/></wire>
-    <wire><p1 x="540" y="0"/><p2 x="580" y="0"/></wire>
-    <wire><p1 x="580" y="0"/><p2 x="580" y="145"/></wire>
-    <wire><p1 x="400" y="220"/><p2 x="480" y="220"/></wire>
-    <wire><p1 x="400" y="145"/><p2 x="400" y="220"/></wire>
-    <wire><p1 x="880" y="40"/><p2 x="960" y="40"/></wire>
-    <wire><p1 x="880" y="40"/><p2 x="880" y="145"/></wire>
-    <wire><p1 x="1440" y="120"/><p2 x="1460" y="120"/></wire>
-    <wire><p1 x="1440" y="120"/><p2 x="1440" y="145"/></wire>
-    <wire><p1 x="400" y="145"/><p2 x="580" y="145"/></wire>
-    <wire><p1 x="580" y="145"/><p2 x="880" y="145"/></wire>
-    <wire><p1 x="880" y="145"/><p2 x="1440" y="145"/></wire>
+    <wire><p1 x="440" y="340"/><p2 x="700" y="340"/></wire>
+    <wire><p1 x="480" y="240"/><p2 x="480" y="260"/></wire>
+    <wire><p1 x="480" y="240"/><p2 x="560" y="240"/></wire>
+    <wire><p1 x="520" y="0"/><p2 x="520" y="160"/></wire>
+    <wire><p1 x="520" y="160"/><p2 x="520" y="200"/></wire>
+    <wire><p1 x="520" y="160"/><p2 x="1000" y="160"/></wire>
+    <wire><p1 x="520" y="200"/><p2 x="560" y="200"/></wire>
+    <wire><p1 x="620" y="220"/><p2 x="660" y="220"/></wire>
+    <wire><p1 x="640" y="320"/><p2 x="640" y="600"/></wire>
+    <wire><p1 x="640" y="320"/><p2 x="700" y="320"/></wire>
+    <wire><p1 x="640" y="600"/><p2 x="640" y="660"/></wire>
+    <wire><p1 x="640" y="600"/><p2 x="960" y="600"/></wire>
+    <wire><p1 x="660" y="220"/><p2 x="660" y="300"/></wire>
+    <wire><p1 x="660" y="300"/><p2 x="700" y="300"/></wire>
+    <wire><p1 x="660" y="400"/><p2 x="680" y="400"/></wire>
+    <wire><p1 x="680" y="360"/><p2 x="700" y="360"/></wire>
+    <wire><p1 x="680" y="380"/><p2 x="680" y="400"/></wire>
+    <wire><p1 x="680" y="380"/><p2 x="700" y="380"/></wire>
+    <wire><p1 x="680" y="400"/><p2 x="700" y="400"/></wire>
+    <wire><p1 x="760" y="300"/><p2 x="780" y="300"/></wire>
+    <wire><p1 x="780" y="300"/><p2 x="780" y="520"/></wire>
+    <wire><p1 x="780" y="300"/><p2 x="800" y="300"/></wire>
+    <wire><p1 x="780" y="520"/><p2 x="1320" y="520"/></wire>
+    <wire><p1 x="800" y="180"/><p2 x="800" y="300"/></wire>
+    <wire><p1 x="800" y="180"/><p2 x="1000" y="180"/></wire>
+    <wire><p1 x="800" y="300"/><p2 x="800" y="420"/></wire>
+    <wire><p1 x="800" y="420"/><p2 x="840" y="420"/></wire>
+    <wire><p1 x="820" y="440"/><p2 x="840" y="440"/></wire>
+    <wire><p1 x="820" y="460"/><p2 x="840" y="460"/></wire>
+    <wire><p1 x="900" y="420"/><p2 x="940" y="420"/></wire>
+    <wire><p1 x="940" y="220"/><p2 x="940" y="240"/></wire>
+    <wire><p1 x="940" y="220"/><p2 x="1000" y="220"/></wire>
+    <wire><p1 x="940" y="240"/><p2 x="940" y="420"/></wire>
+    <wire><p1 x="940" y="240"/><p2 x="1000" y="240"/></wire>
+    <wire><p1 x="960" y="200"/><p2 x="960" y="600"/></wire>
+    <wire><p1 x="960" y="200"/><p2 x="1000" y="200"/></wire>
+    <wire><p1 x="1080" y="140"/><p2 x="1160" y="140"/></wire>
+    <wire><p1 x="1180" y="140"/><p2 x="1320" y="140"/></wire>
+    <wire><p1 x="1180" y="160"/><p2 x="1220" y="160"/></wire>
+    <wire><p1 x="1220" y="160"/><p2 x="1220" y="200"/></wire>
+    <wire><p1 x="1220" y="200"/><p2 x="1320" y="200"/></wire>
   </wires>
   <measurementOrdering/>
 </circuit>
