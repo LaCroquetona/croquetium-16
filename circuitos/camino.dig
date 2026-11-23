@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>2</version>
+  <attributes>
+    <entry><string>Description</string><string>Camino de una entrada de la ALU: se dobla (s), se pone a 0 (z) y se niega (n). Doblar es recablear: el bit n pasa a n+1 y por abajo entra un 0, o el bit 15 que se cae si rotar = 1. cae es el bit que se pierde al doblar (para el carry).</string></entry>
+    <entry><string>shapeType</string><shapeType>LAYOUT</shapeType></entry>
+    <entry><string>Width</string><int>10</int></entry>
+    <entry><string>Height</string><int>6</int></entry>
+  </attributes>
+  <visualElements>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>rotar</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="200" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>s</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="500" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>z</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="620" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>n</string></entry><entry><string>Bits</string><int>1</int></entry><entry><string>rotation</string><rotation rotation="3"/></entry></elementAttributes><pos x="780" y="0"/></visualElement>
+    <visualElement><elementName>In</elementName><elementAttributes><entry><string>Label</string><string>v</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="0" y="60"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>sale</string></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="1000" y="120"/></visualElement>
+    <visualElement><elementName>Out</elementName><elementAttributes><entry><string>Label</string><string>cae</string></entry><entry><string>Bits</string><int>1</int></entry></elementAttributes><pos x="1000" y="260"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>Doblar: un bit a la izquierda</string></entry></elementAttributes><pos x="160" y="300"/></visualElement>
+    <visualElement><elementName>Text</elementName><elementAttributes><entry><string>Description</string><string>s: dobla, z: a 0, n: niega</string></entry></elementAttributes><pos x="640" y="200"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>16</string></entry><entry><string>splitterSpreading</string><int>3</int></entry><entry><string>Output Splitting</string><string>15-15,0-14</string></entry></elementAttributes><pos x="100" y="140"/></visualElement>
+    <visualElement><elementName>And</elementName><elementAttributes></elementAttributes><pos x="220" y="100"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>1,15</string></entry><entry><string>Output Splitting</string><string>16</string></entry></elementAttributes><pos x="340" y="120"/></visualElement>
+    <visualElement><elementName>Splitter</elementName><elementAttributes><entry><string>Input Splitting</string><string>16</string></entry><entry><string>Output Splitting</string><string>15-15</string></entry></elementAttributes><pos x="80" y="280"/></visualElement>
+    <visualElement><elementName>And</elementName><elementAttributes></elementAttributes><pos x="560" y="240"/></visualElement>
+    <visualElement><elementName>Multiplexer</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>flipSelPos</string><boolean>true</boolean></entry></elementAttributes><pos x="480" y="60"/></visualElement>
+    <visualElement><elementName>Multiplexer</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>flipSelPos</string><boolean>true</boolean></entry></elementAttributes><pos x="600" y="80"/></visualElement>
+    <visualElement><elementName>Const</elementName><elementAttributes><entry><string>Value</string><long>0</long></entry><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="580" y="120"/></visualElement>
+    <visualElement><elementName>Multiplexer</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry><entry><string>flipSelPos</string><boolean>true</boolean></entry></elementAttributes><pos x="760" y="100"/></visualElement>
+    <visualElement><elementName>Not</elementName><elementAttributes><entry><string>Bits</string><int>16</int></entry></elementAttributes><pos x="700" y="140"/></visualElement>
+    <visualElement><elementName>Testcase</elementName><elementAttributes><entry><string>Label</string><string>camino</string></entry><entry><string>Testdata</string><testData><dataString>v s z n rotar sale cae
+0x44CB 0 1 0 1 0x0000 0
+0xE623 1 1 0 0 0x0000 1
+0xF9C8 0 1 1 0 0xFFFF 0
+0xE409 1 0 0 1 0xC813 1
+0x0FA9 0 0 0 1 0x0FA9 0
+0x6EE6 1 0 0 1 0xDDCC 0
+0xFDDB 0 1 0 0 0x0000 0
+0xEB51 1 0 1 0 0x295D 1
+0x5F2F 1 0 1 1 0x41A1 0
+0x6133 1 1 1 1 0xFFFF 0
+0x11AD 1 0 1 1 0xDCA5 0
+0x5894 1 1 0 1 0x0000 0
+0x3742 0 1 1 1 0xFFFF 0
+0x0F24 1 0 1 1 0xE1B7 0
+0x5738 0 0 0 0 0x5738 0
+0x76DF 1 1 1 1 0xFFFF 0
+0x89DE 0 1 0 0 0x0000 0
+0xDA28 0 1 1 0 0xFFFF 0
+0xD3A9 1 1 1 1 0xFFFF 1
+0x00CF 1 1 0 0 0x0000 0
+0x5ABB 0 0 1 0 0xA544 0
+0x2412 0 0 1 0 0xDBED 0
+0x8FF9 0 1 0 0 0x0000 0
+0xB058 1 0 0 0 0x60B0 1
+0x82AB 0 1 1 1 0xFFFF 0
+0xA4DD 1 1 0 0 0x0000 1
+0x9FBF 1 1 1 0 0xFFFF 1
+0x844F 0 1 0 1 0x0000 0
+0x0AA8 0 0 1 0 0xF557 0
+0x1216 0 1 1 0 0xFFFF 0
+0xE6D5 0 0 1 1 0x192A 0
+0xDA43 0 1 0 0 0x0000 0
+0x184A 1 0 0 1 0x3094 0
+0x9883 0 1 1 0 0xFFFF 0
+0x0457 0 0 1 0 0xFBA8 0
+0x1329 1 0 1 0 0xD9AD 0
+0x6959 1 0 1 0 0x2D4D 0
+0xC7B6 1 1 0 1 0x0000 1
+0xCDFD 1 0 0 0 0x9BFA 1
+0xA7CD 0 1 1 0 0xFFFF 0
+0x8877 0 1 1 1 0xFFFF 0
+0x7822 0 0 0 0 0x7822 0
+0x56E2 0 0 1 1 0xA91D 0
+0x82B5 1 1 1 0 0xFFFF 1
+0x951A 0 1 0 0 0x0000 0
+0xA436 0 1 0 1 0x0000 0
+0x4B6E 0 1 0 1 0x0000 0
+0x273E 0 0 1 1 0xD8C1 0
+0x9752 0 1 1 0 0xFFFF 0
+0x176C 1 0 0 0 0x2ED8 0
+0xD3BA 0 0 0 0 0xD3BA 0
+0xD78F 0 0 1 0 0x2870 0
+0x7B9B 0 0 1 1 0x8464 0
+0x968A 1 1 1 0 0xFFFF 1
+0x6A4C 1 0 0 0 0xD498 0
+0x9752 1 1 1 1 0xFFFF 1
+0xCC0F 0 0 1 1 0x33F0 0
+0x3904 1 0 1 1 0x8DF7 0
+0x84A6 0 0 1 0 0x7B59 0
+0x7E25 1 0 1 0 0x03B5 0
+0xE553 0 1 0 1 0x0000 0
+0x9D12 0 1 0 1 0x0000 0
+0x9B09 0 1 0 0 0x0000 0
+0x7D7D 0 0 0 1 0x7D7D 0
+0x2508 1 0 0 0 0x4A10 0
+0x0513 1 1 1 1 0xFFFF 0
+0x4EF0 0 1 0 0 0x0000 0
+0x5BF0 0 0 1 1 0xA40F 0
+0x36B8 1 0 0 0 0x6D70 0
+0x1042 1 0 0 1 0x2084 0
+0xDD82 0 0 0 1 0xDD82 0
+0x20FA 1 1 1 1 0xFFFF 0
+0xE818 0 1 1 0 0xFFFF 0
+0x8414 1 0 1 0 0xF7D7 1
+0x1FE8 1 0 0 0 0x3FD0 0
+0x84AA 1 1 1 0 0xFFFF 1
+0x2DB1 0 1 0 0 0x0000 0
+0xA26D 1 0 0 1 0x44DB 1
+0xFD7A 1 0 1 1 0x050A 1
+0x8CEA 0 0 0 1 0x8CEA 0
+0x51A5 0 1 1 1 0xFFFF 0
+0xBE44 0 1 0 0 0x0000 0
+0xC120 0 0 1 1 0x3EDF 0
+0x6F6B 0 1 1 1 0xFFFF 0
+0xC498 0 0 0 1 0xC498 0
+0x33BC 1 0 0 0 0x6778 0
+0xE3DE 0 1 1 1 0xFFFF 0
+0x545A 1 1 0 1 0x0000 0
+0x6C8D 0 1 1 0 0xFFFF 0
+0x9748 1 0 1 0 0xD16F 1
+0x6132 1 0 0 0 0xC264 0
+0x8552 0 0 1 0 0x7AAD 0
+0x66A1 1 1 1 1 0xFFFF 0
+0x5601 1 1 1 0 0xFFFF 0
+0x6AFA 1 0 1 0 0x2A0B 0
+0x0C5D 0 0 1 0 0xF3A2 0
+0x267E 1 1 1 1 0xFFFF 0
+0xA5BA 0 0 1 1 0x5A45 0
+0xB34F 1 1 1 1 0xFFFF 1
+0x39E7 1 1 0 0 0x0000 0
+0x8E24 0 1 1 1 0xFFFF 0
+0x5733 1 0 1 0 0x5199 0
+0xC740 1 1 1 0 0xFFFF 1
+0xFC43 0 1 0 1 0x0000 0
+0x4FEA 1 1 0 0 0x0000 0
+0x052F 1 1 1 1 0xFFFF 0
+0x4DDC 1 1 1 0 0xFFFF 0
+0xEF28 0 1 0 1 0x0000 0
+0x23B6 1 0 1 0 0xB893 0
+0x5409 0 0 1 1 0xABF6 0
+0x9BDA 0 0 0 1 0x9BDA 0
+0x89C3 0 0 1 1 0x763C 0
+0x1977 0 1 1 1 0xFFFF 0
+0x76D7 1 1 0 1 0x0000 0
+0x84E0 1 0 1 0 0xF63F 1
+0x0FA2 1 1 1 0 0xFFFF 0
+0x89C6 0 0 0 1 0x89C6 0
+0x4BDE 1 1 0 0 0x0000 0
+0x46B4 1 1 1 1 0xFFFF 0
+0x7B21 0 0 1 0 0x84DE 0
+0x3678 0 1 1 1 0xFFFF 0
+0x332F 0 0 0 0 0x332F 0
+0x6EE0 0 1 1 1 0xFFFF 0
+0x8C95 0 0 0 0 0x8C95 0
+0xCCA6 0 1 1 1 0xFFFF 0
+0x5652 0 0 1 1 0xA9AD 0
+0xC778 0 1 1 1 0xFFFF 0
+0xFE1F 0 0 0 0 0xFE1F 0
+0x07E4 0 1 1 1 0xFFFF 0
+0x930D 0 1 0 0 0x0000 0
+0x0F98 0 1 0 0 0x0000 0
+0xC24C 1 0 0 1 0x8499 1
+0x9B57 0 0 0 0 0x9B57 0
+0x15EB 1 0 1 0 0xD429 0
+0x6156 0 1 0 1 0x0000 0
+0x6244 1 1 1 1 0xFFFF 0
+0x850A 0 0 0 0 0x850A 0
+0xB300 1 0 1 1 0x99FE 1
+0x6613 1 0 1 0 0x33D9 0
+0x80CF 0 0 0 0 0x80CF 0
+0x681D 1 0 0 0 0xD03A 0
+0xF036 1 0 1 0 0x1F93 1
+0x40D5 0 1 0 1 0x0000 0
+0xE465 0 1 0 1 0x0000 0
+0xA69C 0 1 0 1 0x0000 0
+0x1DC7 1 1 0 1 0x0000 0
+0xC2A7 0 1 0 1 0x0000 0
+0x7DA3 0 1 1 1 0xFFFF 0
+0xF659 0 0 1 0 0x09A6 0
+0x9528 0 0 1 1 0x6AD7 0
+0xA600 0 1 1 0 0xFFFF 0
+0x2135 0 1 1 1 0xFFFF 0
+0x98BD 1 1 1 1 0xFFFF 1
+0x0468 0 0 1 1 0xFB97 0
+0xA7B6 0 1 1 1 0xFFFF 0
+0xE885 1 1 0 0 0x0000 1
+0x44E7 0 1 1 0 0xFFFF 0
+0xAD63 1 1 1 1 0xFFFF 1
+0xEDDC 1 0 0 0 0xDBB8 1
+0x8010 0 0 0 0 0x8010 0
+0xD27C 0 0 1 0 0x2D83 0
+0x689F 1 0 0 0 0xD13E 0
+0x6F4C 0 1 0 1 0x0000 0
+0xF92D 1 0 0 1 0xF25B 1
+0x786E 1 1 1 0 0xFFFF 0
+0xF6DD 0 1 1 0 0xFFFF 0
+0x043D 1 1 0 1 0x0000 0
+0xD9E7 0 1 1 0 0xFFFF 0
+0x6128 1 0 0 1 0xC250 0
+0xA190 1 1 1 1 0xFFFF 1
+0xE7B0 1 0 1 0 0x309F 1
+0x5370 1 0 1 0 0x591F 0
+0xBC9A 1 1 1 0 0xFFFF 1
+0x2E52 0 0 1 1 0xD1AD 0
+0xEDC1 1 1 1 1 0xFFFF 1
+0xC6E4 1 0 1 1 0x7236 1
+0x4A15 1 0 0 0 0x942A 0
+0x853D 1 0 1 1 0xF584 1
+0x840E 1 1 1 1 0xFFFF 1
+0xABFB 1 0 1 1 0xA808 1
+0xD9A9 0 0 0 0 0xD9A9 0
+0x4C98 0 0 0 1 0x4C98 0
+0x4FB9 1 0 1 0 0x608D 0
+0x0188 0 1 0 0 0x0000 0
+0xD800 1 0 0 1 0xB001 1
+0x3CBF 1 1 0 1 0x0000 0
+0x1868 0 0 1 0 0xE797 0
+0xE503 1 1 1 0 0xFFFF 1
+0xF558 0 0 1 0 0x0AA7 0
+0x5591 1 1 1 1 0xFFFF 0
+0x6DE3 1 1 0 0 0x0000 0
+0xB19A 1 0 1 1 0x9CCA 1
+0x3396 0 1 1 0 0xFFFF 0
+0xD2C2 0 0 1 0 0x2D3D 0
+0xD0C0 0 0 1 1 0x2F3F 0
+0x8F40 1 1 1 1 0xFFFF 1
+0x6DC5 1 1 1 0 0xFFFF 0
+0xAD42 0 0 1 0 0x52BD 0
+0x1DC7 1 0 0 1 0x3B8E 0
+0xFCCA 1 1 0 0 0x0000 1
+0x47BD 1 0 0 0 0x8F7A 0
+0x581B 0 0 0 1 0x581B 0
+0xD833 1 0 0 1 0xB067 1
+0x70C6 0 0 1 1 0x8F39 0
+0x89C4 1 0 0 1 0x1389 1
+0xB1AD 0 0 1 0 0x4E52 0
+0x1500 1 0 0 0 0x2A00 0
+0x9997 1 0 1 0 0xCCD1 1
+0xB938 0 0 0 1 0xB938 0
+0xBE7E 0 0 1 1 0x4181 0
+0x0413 1 0 1 0 0xF7D9 0
+0x8ACA 1 0 1 1 0xEA6A 1
+0xC99C 1 0 1 0 0x6CC7 1
+0x1B9D 0 0 0 0 0x1B9D 0
+0xDE85 1 0 1 1 0x42F4 1
+0x8603 1 0 1 0 0xF3F9 1
+0xBF38 0 1 0 1 0x0000 0
+0xE416 0 0 0 0 0xE416 0
+0x6EBA 1 1 1 1 0xFFFF 0
+0x51CD 0 1 1 1 0xFFFF 0
+0x3C58 0 1 1 0 0xFFFF 0
+0x04F7 0 1 0 1 0x0000 0
+0x0F8C 1 1 1 1 0xFFFF 0
+0xD11D 1 1 0 0 0x0000 1
+0xF107 0 0 0 0 0xF107 0
+0x4776 1 1 1 1 0xFFFF 0
+0x7D87 0 0 1 0 0x8278 0
+0x3B99 0 1 1 1 0xFFFF 0
+0x81C9 0 1 1 1 0xFFFF 0
+0xB7AD 1 1 1 0 0xFFFF 1
+0x49EB 0 1 0 0 0x0000 0
+0xF991 1 0 0 1 0xF323 1
+0x6B1E 1 0 1 0 0x29C3 0
+0x330B 0 1 1 0 0xFFFF 0
+0xEC30 1 1 1 0 0xFFFF 1
+0xDD2D 1 1 0 1 0x0000 1
+0x886D 0 0 0 1 0x886D 0
+0xD448 0 0 0 0 0xD448 0
+0xEAE7 1 1 0 0 0x0000 1
+0x3622 1 0 1 1 0x93BB 0
+0x74EC 1 0 0 1 0xE9D8 0
+0x515B 0 1 0 0 0x0000 0
+0x5267 0 1 0 0 0x0000 0
+0xDAD7 0 0 0 0 0xDAD7 0
+0x7EEE 1 1 0 0 0x0000 0
+0xC623 0 0 1 0 0x39DC 0
+0x7A77 0 0 1 1 0x8588 0
+0x8E5F 1 0 0 1 0x1CBF 1
+0xE5BA 1 0 1 1 0x348A 1
+0x66C4 1 1 1 0 0xFFFF 0
+0x84D6 1 0 0 1 0x09AD 1
+0xAC17 0 1 1 1 0xFFFF 0
+0xB2DE 1 1 1 0 0xFFFF 1
+0x4C4D 0 1 0 0 0x0000 0
+0x2413 0 1 0 0 0x0000 0
+0xEBC7 1 0 0 0 0xD78E 1
+0x4E60 0 0 1 1 0xB19F 0
+0xD5A2 0 0 0 0 0xD5A2 0
+0xC36A 0 1 0 1 0x0000 0
+0xB6B6 0 0 1 0 0x4949 0
+0xB208 1 1 0 1 0x0000 1
+0x6AEC 1 0 1 0 0x2A27 0
+0xBEC9 1 1 0 0 0x0000 1
+0xA196 0 0 0 0 0xA196 0
+0xDEDE 0 0 1 0 0x2121 0
+0x6CA2 1 0 1 0 0x26BB 0
+0x3DE5 0 1 1 0 0xFFFF 0
+0x890A 0 0 0 1 0x890A 0
+0x8C21 1 1 1 1 0xFFFF 1
+0x3209 0 0 0 1 0x3209 0
+0x16F6 1 0 1 1 0xD213 0
+0x7CA9 0 0 0 1 0x7CA9 0
+0xE230 0 0 0 1 0xE230 0
+0xB899 0 0 1 0 0x4766 0
+0xAE9C 0 1 0 0 0x0000 0
+0x4B9D 1 1 0 0 0x0000 0
+0xCAE7 0 1 1 1 0xFFFF 0
+0x892C 1 1 0 1 0x0000 1
+0x08EC 1 1 1 0 0xFFFF 0
+0x8E38 0 1 1 1 0xFFFF 0
+0x0C19 0 0 0 0 0x0C19 0
+0xAA01 1 1 0 1 0x0000 1
+0x25F8 1 0 1 1 0xB40F 0
+0x01BE 0 1 1 0 0xFFFF 0
+0x4AD3 0 0 1 1 0xB52C 0
+0xD77A 1 1 1 1 0xFFFF 1
+0x1340 0 0 1 1 0xECBF 0
+0x9155 0 0 0 1 0x9155 0
+0xD3DD 0 0 1 1 0x2C22 0
+0x783E 0 0 1 1 0x87C1 0
+0x181F 1 0 0 1 0x303E 0
+0xADE8 1 0 0 1 0x5BD1 1
+0xBA56 0 0 1 1 0x45A9 0
+0x53DF 0 1 0 0 0x0000 0
+0x7736 0 0 0 1 0x7736 0
+0xEAAA 0 0 1 1 0x1555 0
+0xAB7B 1 0 0 0 0x56F6 1
+0xFA3C 0 0 1 0 0x05C3 0
+0x04B2 0 0 0 0 0x04B2 0
+0x6687 0 1 1 0 0xFFFF 0
+</dataString></testData></entry></elementAttributes><pos x="0" y="380"/></visualElement>
+  </visualElements>
+  <wires>
+    <wire><p1 x="0" y="60"/><p2 x="40" y="60"/></wire>
+    <wire><p1 x="40" y="60"/><p2 x="40" y="140"/></wire>
+    <wire><p1 x="40" y="60"/><p2 x="60" y="60"/></wire>
+    <wire><p1 x="40" y="140"/><p2 x="100" y="140"/></wire>
+    <wire><p1 x="60" y="60"/><p2 x="60" y="280"/></wire>
+    <wire><p1 x="60" y="60"/><p2 x="480" y="60"/></wire>
+    <wire><p1 x="60" y="280"/><p2 x="80" y="280"/></wire>
+    <wire><p1 x="100" y="280"/><p2 x="560" y="280"/></wire>
+    <wire><p1 x="120" y="140"/><p2 x="220" y="140"/></wire>
+    <wire><p1 x="120" y="200"/><p2 x="300" y="200"/></wire>
+    <wire><p1 x="200" y="0"/><p2 x="200" y="100"/></wire>
+    <wire><p1 x="200" y="100"/><p2 x="220" y="100"/></wire>
+    <wire><p1 x="280" y="120"/><p2 x="340" y="120"/></wire>
+    <wire><p1 x="300" y="140"/><p2 x="300" y="200"/></wire>
+    <wire><p1 x="300" y="140"/><p2 x="340" y="140"/></wire>
+    <wire><p1 x="360" y="120"/><p2 x="440" y="120"/></wire>
+    <wire><p1 x="440" y="100"/><p2 x="440" y="120"/></wire>
+    <wire><p1 x="440" y="100"/><p2 x="480" y="100"/></wire>
+    <wire><p1 x="500" y="0"/><p2 x="500" y="20"/></wire>
+    <wire><p1 x="500" y="20"/><p2 x="500" y="60"/></wire>
+    <wire><p1 x="500" y="20"/><p2 x="540" y="20"/></wire>
+    <wire><p1 x="520" y="80"/><p2 x="600" y="80"/></wire>
+    <wire><p1 x="540" y="20"/><p2 x="540" y="240"/></wire>
+    <wire><p1 x="540" y="240"/><p2 x="560" y="240"/></wire>
+    <wire><p1 x="580" y="120"/><p2 x="600" y="120"/></wire>
+    <wire><p1 x="620" y="0"/><p2 x="620" y="80"/></wire>
+    <wire><p1 x="620" y="260"/><p2 x="1000" y="260"/></wire>
+    <wire><p1 x="640" y="100"/><p2 x="680" y="100"/></wire>
+    <wire><p1 x="680" y="100"/><p2 x="680" y="140"/></wire>
+    <wire><p1 x="680" y="100"/><p2 x="760" y="100"/></wire>
+    <wire><p1 x="680" y="140"/><p2 x="700" y="140"/></wire>
+    <wire><p1 x="740" y="140"/><p2 x="760" y="140"/></wire>
+    <wire><p1 x="780" y="0"/><p2 x="780" y="100"/></wire>
+    <wire><p1 x="800" y="120"/><p2 x="1000" y="120"/></wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>
