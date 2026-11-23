@@ -800,7 +800,7 @@ def datasheet(sistema=None):
         "",
         "La columna /2 no sale de la ROM: la enciende una puerta cuando O3 = 1, O4 = 0 y O0 = 0 "
         "(operaciones 08, 0A, 0C y 0E). Entonces el resultado pasa por el desplazador a la derecha "
-        "de la salida (cableado movido un bit y 4 x 74HC157 para elegir), y por arriba entra un 0.",
+        "de la salida (cableado movido un bit y 4 x 74HC157 para elegir). Por arriba entra el bit 17 del sumador (un 0 en `x/2` e `y/2`, que no suman), o el bit que se cae si está el modo rotar.",
         "",
         "## 6. Destinos (DDDDD)",
         "",
@@ -842,7 +842,7 @@ def datasheet(sistema=None):
         "8. Ojo con `M =0`: es saltar si M vale 0. Para guardar un 0 es `0 => M`.",
         "9. `GRABA` solo funciona ejecutando desde la ROM: un programa en la RAM de programas no puede reescribirse.",
         f"10. La pila R guarda {NIVELES_PILA_R} vueltas. Con una más se pisa la más vieja (el IDE avisa).",
-        "11. `/2` mete un 0 por arriba: con negativos no da la mitad (-4/2 da 32766). En `(A+B)/2` la suma se pasa de 16 bits antes de dividir: con números grandes sale mal.",
+        "11. Las de `/2` tratan los números como positivos (0 a 65535): con negativos no dan la mitad (-4/2 da 32766). A cambio, con A y B positivos, `(A+B)/2` da la media aunque la suma se pase de 16 bits y `(A-B)/2` da la mitad de la resta aunque salga negativa.",
         "",
         "## 11. Archivos",
         "",

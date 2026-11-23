@@ -1,6 +1,6 @@
 # Croquetium 16
 
-Un ordenador de 16 bits diseñado desde cero para montarlo con chips de lógica 74HC, sin microprocesador. Sale de mezclar dos cosas: el ordenador de 8 bits en protoboard de Ben Eater y el ordenador Hack del curso Nand2Tetris. La idea es entender cada capa de verdad, desde las puertas hasta un lenguaje tipo BASIC, y acabar con una especie de consola de fantasía (al estilo PICO-8 o TIC-80) que funcione en hardware real.
+Un ordenador de 16 bits diseñado desde cero para montarlo con chips de lógica 74HC, sin microprocesador. Mezcla el ordenador de 8 bits en protoboard de Ben Eater y el ordenador Hack del curso Nand2Tetris. El objetivo es una máquina completa (CPU, vídeo, teclado y un BASIC propio) que funcione en hardware real, al estilo de una consola de fantasía como PICO-8 o TIC-80.
 
 Ahora mismo hay:
 
@@ -97,8 +97,11 @@ Doblar no necesita sumador: es cablear cada bit una posición más a la izquierd
   - en sumas y restas, el bit 17 del sumador;
   - en `2x` y `2y`, el bit que se cae por la izquierda;
   - en las de `/2`, el bit que se cae por la derecha.
+  - en `x+1` y `x-1` sale al revés (0 cuando se pasa), por cómo las hace la ALU con negaciones.
 - **ROTAR**: al doblar o dividir, el bit que se cae vuelve a entrar por el otro lado.
-- **ENCADENAR**: el sumador suma también el carry. Sirve para números de varias palabras.
+- **ENCADENAR**: el sumador suma también el carry. Sirve para números de varias palabras, haciendo la misma operación en la mitad de abajo y en la de arriba.
+
+Al dividir entre 2 entra por arriba el bit 17 del sumador (un 0 en `x/2` e `y/2`), así que `(x+y)/2` da la media aunque la suma se pase. Con negativos, las de `/2` no dan la mitad.
 
 Ojo: cualquier operación de ALU pisa el carry, también `A => C`. El destino del salto hay que prepararlo antes de la operación que da el carry.
 
@@ -365,6 +368,7 @@ Si algún día hace falta más velocidad, hay tres opciones:
 ## Qué falta
 
 - Comparar también M, N y el carry ciclo a ciclo, y probar con programas aleatorios.
+- Decidir si los movimientos (`A => C`, `M => B`) dejan de pisar el carry.
 - Pasar los bloques de Digital a chips 74HC reales (Digital tiene librería 74xx), con los mismos tests.
 - Contar chips y medir la ruta crítica con los datos de cada chip.
 - Montar la CPU mínima en protoboard.
