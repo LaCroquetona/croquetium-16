@@ -19,14 +19,15 @@ Todavía no hay nada montado en protoboard. Vídeo, teclado de verdad y el BASIC
 3. [La ALU](#la-alu)
 4. [Saltos](#saltos)
 5. [Instrucciones de sistema](#instrucciones-de-sistema)
-6. [El ensamblador](#el-ensamblador)
-7. [El IDE y el emulador](#el-ide-y-el-emulador)
-8. [Los circuitos en Digital](#los-circuitos-en-digital)
-9. [Bloque a bloque](#bloque-a-bloque)
-10. [La palabra de control](#la-palabra-de-control)
-11. [Velocidad](#velocidad)
-12. [Qué falta](#qué-falta)
-13. [De dónde sale cada idea](#de-dónde-sale-cada-idea)
+6. [La pantalla](#la-pantalla)
+7. [El ensamblador](#el-ensamblador)
+8. [El IDE y el emulador](#el-ide-y-el-emulador)
+9. [Los circuitos en Digital](#los-circuitos-en-digital)
+10. [Bloque a bloque](#bloque-a-bloque)
+11. [La palabra de control](#la-palabra-de-control)
+12. [Velocidad](#velocidad)
+13. [Qué falta](#qué-falta)
+14. [De dónde sale cada idea](#de-dónde-sale-cada-idea)
 
 ## La máquina en resumen
 
@@ -39,7 +40,7 @@ Todavía no hay nada montado en protoboard. Vídeo, teclado de verdad y el BASIC
   - **PC**: contador de programa.
   - **R**: pila de retornos de 16 niveles para las funciones. No se lee directamente; se saca con `R => A`.
 - Memorias:
-  - **RAM M** y **RAM N**, de 64K × 16 cada una y separadas. M es la casilla a la que apunta A (`M = RAM M[A]`) y N, la casilla a la que apunta B.
+  - **RAM M** y **RAM N**, de 64K × 16 cada una y separadas. M es la casilla a la que apunta A (`M = RAM M[A]`) y N, la casilla a la que apunta B. La mitad alta de N, desde 0x8000, es la pantalla.
   - **ROM de programa**.
   - **RAM de programas**, para cargar y ejecutar código desde un programa.
 - No hay registro de flags (igual que en Hack). Los saltos miran el resultado de la ALU en la misma instrucción.
@@ -143,6 +144,30 @@ Todo esto está en `sistema.json`, que leen el ensamblador, el emulador y el IDE
 
 La RAM de programas va con la idea de que no se pueda escribir y ejecutar a la vez: `GRABA` solo funciona cuando se ejecuta desde la ROM. El reset vuelve a la ROM sin borrar la RAM.
 
+## La pantalla
+
+Blanco y negro, mapeada en la mitad alta de la RAM N, igual que la pantalla de Hack está dentro de su RAM. Cada palabra son 16 píxeles en horizontal, con el bit 15 a la izquierda; 1 es blanco y 0 negro. Las filas van seguidas.
+
+| Modo | Palabras por fila | Ocupa |
+|---|---|---|
+| 640×480 | 40 | N[0x8000] a N[0xCAFF] (19200 palabras) |
+| 320×240 | 20 | N[0x8000] a N[0x92BF] (4800 palabras) |
+
+El píxel (x, y) está en `N[0x8000 + y * palabras por fila + x / 16]`, bit `15 - x % 16`.
+
+Por qué en N y en la mitad alta: el puntero de N es B, y `@` no lo machaca como a A. En el hardware, el bit 15 de B elegirá entre la RAM normal y la de vídeo, así que la pantalla puede ser un chip aparte sin tocar el resto de N. Cómo se reparten la CPU y la señal VGA ese chip (doble puerto o buzón) está por decidir. Por ahora el modo se elige en el IDE.
+
+### La fuente
+
+Para escribir en 320×240 hay una fuente de 8×8 con 256 letras: 40 columnas y 30 filas de texto. Está dibujada a mano en `fuente.txt` (`#` encendido, `.` apagado). De 0x20 a 0x7E es ASCII; el resto son cajas, marcos, iconos del sistema, símbolos de mates y la croqueta del logo, que también gira para el "cargando".
+
+| Qué | Dónde en M | Dibujo en |
+|---|---|---|
+| Fuente derecha | 0x7000 a 0x77FF | bits 7-0 |
+| Fuente izquierda | 0x7800 a 0x7FFF | bits 15-8 |
+
+La fila r de la letra c está en `M[0x7000 + c * 8 + r]` y `M[0x7800 + c * 8 + r]`. Una palabra de pantalla lleva dos letras: la de la columna par con la fuente izquierda y la de la impar con la derecha, juntas con `M|N => N`. `programas/arranque.cro` pinta la pantalla de arranque con el logo y la croqueta girando.
+
 ## El ensamblador
 
 Los programas son archivos `.cro`.
@@ -188,12 +213,19 @@ Hace falta Python 3 con Tkinter (el instalador normal de Python en Windows ya lo
   - Ves los registros y la instrucción desmontada por campos.
   - Las RAM M y N se recorren enteras, siguiendo a A o B o fijas en una dirección.
   - Vista tablero: los bits de varias palabras como una rejilla.
+  - Pestaña Pantalla: enseña la pantalla en 640×480 o 320×240 mientras corre el programa; al pasar el ratón dice el píxel, la casilla de N y el bit.
+  - Casilla "Fuente en M": con ella marcada, cada reset carga `fuente.txt` en M.
+  - Pestaña Fuente: las 256 letras dibujadas; al pasar el ratón dice el código, qué es y dónde está en M. Con un clic copia el código y la abre en el editor de al lado, donde se pinta píxel a píxel (espejo, invertir, mover). Lo que cambias entra ya en M; "Guardar fuente.txt" lo deja en el archivo.
+  - Pestaña Diseño: pantallas de texto de 40×30 dibujadas con la fuente, como los editores de PICO-8 o TIC-80. Lápiz, texto, cajas (fina, doble, redonda o pegada al borde), líneas que se unen solas con las cajas (┬ ├ ╠ ┼...), relleno y Ctrl+Z. Se guardan como `.pan`, se ven en la pestaña Pantalla o se convierten en un `.cro` que las pinta.
+  - Puntos de parada: clic en el margen de una línea y al correr se para justo antes de ella. F5 sigue.
+  - Velocidad de 1 a 250.000 instrucciones por segundo, y 1 MHz, la de la máquina real. Si el PC no llega, al lado sale la velocidad que consigue de verdad.
   - Pestañas con las ROMs, las instrucciones de sistema (editables) y la datasheet.
 - **Línea de comandos**:
 
 ```
 python croquetium.py programas/fibonacci.cro            ensambla, guarda .bin y .hex y lo ejecuta
 python croquetium.py programas/fibonacci.cro --traza    enseña cada ciclo
+python croquetium.py programas/arranque.cro --fuente    lo mismo, con la fuente cargada en M
 python croquetium.py --datasheet                        escribe DATASHEET.md
 python croquetium.py --rom-alu --rom-sistema            escribe las ROMs en .hex
 ```
@@ -372,7 +404,8 @@ Si algún día hace falta más velocidad, hay tres opciones:
 - Pasar los bloques de Digital a chips 74HC reales (Digital tiene librería 74xx), con los mismos tests.
 - Contar chips y medir la ruta crítica con los datos de cada chip.
 - Montar la CPU mínima en protoboard.
-- Salida de vídeo (pantalla mapeada en memoria), teclado y el BASIC (Croquetium BASIC).
+- Vídeo en hardware: la señal VGA de 640×480 a 60 Hz, cómo comparten la CPU y el vídeo la RAM de pantalla, y modos con tiles más adelante.
+- Teclado y el BASIC (Croquetium BASIC).
 
 ## De dónde sale cada idea
 

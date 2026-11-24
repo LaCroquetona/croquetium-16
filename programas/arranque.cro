@@ -1,0 +1,288 @@
+// Pantalla de arranque de Croquetium OS en 320x240.
+// Necesita la fuente en M (casilla "Fuente en M" del IDE) y la pestaña Pantalla en 320x240.
+// Texto de 40 columnas x 30 filas. Una columna par va en la mitad izquierda de su palabra
+// de pantalla (fuente 0x7800) y una impar en la derecha (fuente 0x7000).
+// PON pinta la letra que hay en B donde dicen sitio y fuente, y avanza una columna.
+
+// borra la pantalla: la RAM real arranca con basura
+@32767
+A+1 => B        // B = 0x8000
+@4800
+PC+1 => C
+0 => N
+B+1 => B
+A-1 => A >0
+
+// logo, mitad de arriba: fila 11, columna 19
+@32767
+A+1 => B
+@1769           // 11 * 160 + 19 / 2
+A+B => B
+@sitio
+B => M
+@28672          // 0x7000, fuente derecha
+A => B
+@fuente
+B => M
+@0xB8       // logo arriba-izq
+A => B
+@PON
+A => C
+VUELVE
+@0xB9       // logo arriba-der
+A => B
+@PON
+A => C
+VUELVE
+
+// logo, mitad de abajo: fila 12, columna 19
+@32767
+A+1 => B
+@1929           // 12 * 160 + 19 / 2
+A+B => B
+@sitio
+B => M
+@28672          // 0x7000, fuente derecha
+A => B
+@fuente
+B => M
+@0xBA       // logo abajo-izq
+A => B
+@PON
+A => C
+VUELVE
+@0xBB       // logo abajo-der
+A => B
+@PON
+A => C
+VUELVE
+
+// nombre: fila 15, columna 13
+@32767
+A+1 => B
+@2406           // 15 * 160 + 13 / 2
+A+B => B
+@sitio
+B => M
+@28672          // 0x7000, fuente derecha
+A => B
+@fuente
+B => M
+@0x63       // c
+A => B
+@PON
+A => C
+VUELVE
+@0x72       // r
+A => B
+@PON
+A => C
+VUELVE
+@0x6F       // o
+A => B
+@PON
+A => C
+VUELVE
+@0x71       // q
+A => B
+@PON
+A => C
+VUELVE
+@0x75       // u
+A => B
+@PON
+A => C
+VUELVE
+@0x65       // e
+A => B
+@PON
+A => C
+VUELVE
+@0x74       // t
+A => B
+@PON
+A => C
+VUELVE
+@0x69       // i
+A => B
+@PON
+A => C
+VUELVE
+@0x75       // u
+A => B
+@PON
+A => C
+VUELVE
+@0x6D       // m
+A => B
+@PON
+A => C
+VUELVE
+@0x20       // espacio
+A => B
+@PON
+A => C
+VUELVE
+@0x6F       // o
+A => B
+@PON
+A => C
+VUELVE
+@0x73       // s
+A => B
+@PON
+A => C
+VUELVE
+
+// cargando: fila 18, columna 16
+@32767
+A+1 => B
+@2888           // 18 * 160 + 16 / 2
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0x63       // c
+A => B
+@PON
+A => C
+VUELVE
+@0x61       // a
+A => B
+@PON
+A => C
+VUELVE
+@0x72       // r
+A => B
+@PON
+A => C
+VUELVE
+@0x67       // g
+A => B
+@PON
+A => C
+VUELVE
+@0x61       // a
+A => B
+@PON
+A => C
+VUELVE
+@0x6E       // n
+A => B
+@PON
+A => C
+VUELVE
+@0x64       // d
+A => B
+@PON
+A => C
+VUELVE
+@0x6F       // o
+A => B
+@PON
+A => C
+VUELVE
+@0x0E       // puntos suspensivos
+A => B
+@PON
+A => C
+VUELVE
+
+// la croqueta gira: cada vuelta borra su casilla y pinta la posición siguiente (0xBC a 0xBF)
+(GIRA)
+// croqueta: fila 18, columna 14
+@32767
+A+1 => B
+@2887           // 18 * 160 + 14 / 2
+A+B => B
+@sitio
+B => M
+@30720          // 0x7800, fuente izquierda
+A => B
+@fuente
+B => M
+@BORRA
+A => C
+VUELVE
+@paso
+M+1 => M
+M => B
+@3
+A&B => B
+@0xBC
+A+B => B        // B = 0xBC + (paso & 3)
+@PON
+A => C
+VUELVE
+@20000          // espera: más grande, gira más lento
+PC+1 => C
+A-1 => A >0
+@GIRA
+A => C
+jmp
+
+(PON)
+2B => B
+2B => B
+2B => B         // B = letra * 8
+@fuente
+M+B => B        // B = dónde empieza la letra en la fuente
+@fila
+B => M
+@8
+A => B
+@cuenta
+B => M
+@sitio
+M => B          // B = palabra de pantalla de la fila de arriba
+(PON_FILA)
+@fila
+M+1 => M
+M-1 => A        // A = fila de la letra
+M|N => N        // se junta con la otra letra de la palabra
+@20
+A+B => B        // fila de pantalla de abajo
+@PON_FILA
+A => C
+@cuenta
+M-1 => M >0
+// avanza: de la izquierda pasa a la derecha de la misma palabra; de la derecha, a la izquierda de la siguiente
+@PON_ERA_DERECHA
+A => C
+@30720
+A => B
+@fuente
+M-B !=0
+@28672          // 0x7000, fuente derecha
+A => B
+@fuente
+B => M
+RETORNA
+(PON_ERA_DERECHA)
+@30720
+A => B
+@fuente
+B => M
+@sitio
+M+1 => M
+RETORNA
+
+(BORRA)
+@8
+A => B
+@cuenta
+B => M
+@sitio
+M => B
+(BORRA_FILA)
+0 => N
+@20
+A+B => B
+@BORRA_FILA
+A => C
+@cuenta
+M-1 => M >0
+RETORNA

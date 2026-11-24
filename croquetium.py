@@ -1,5 +1,6 @@
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -72,6 +73,15 @@ NIVELES_PILA_R = 16
 MAX_NUMERO = 0x7FFF
 MASCARA = 0xFFFF
 TAM_RAM = 0x10000
+# La pantalla es la mitad alta de N: en el hardware el bit 15 de B elige el chip de vídeo.
+PANTALLA = 0x8000
+MODOS_PANTALLA = {"640x480": (640, 480), "320x240": (320, 240)}
+# Fuente de 8x8 para el modo 320x240. La derecha lleva el dibujo en los bits 7-0 y la izquierda
+# en los 15-8, para que dos letras compartan una palabra de pantalla.
+RUTA_FUENTE = Path(__file__).with_name("fuente.txt")
+FUENTE_DERECHA = 0x7000
+FUENTE_IZQUIERDA = 0x7800
+LETRAS = 256
 
 RUTA_SISTEMA = Path(__file__).with_name("sistema.json")
 
@@ -196,6 +206,52 @@ def guardar_sistema(sistema, ruta=RUTA_SISTEMA):
 
 
 SISTEMA = cargar_sistema()
+
+
+# Cabecera de cada letra en fuente.txt: "0x41 A | a mayúscula" o "0xB8 | logo croqueta".
+RE_LETRA = re.compile(r"0x([0-9A-Fa-f]{2}) (?:(\S) )?\| ?(.*)$")
+
+
+def cargar_fuente(ruta=RUTA_FUENTE):
+    # Devuelve las 256 letras como (letra, qué es, 8 filas), o None si no está el archivo.
+    ruta = Path(ruta)
+    if not ruta.exists():
+        return None
+    letras = [["", "", []] for _ in range(LETRAS)]
+    actual = None
+    for num, linea in enumerate(ruta.read_text(encoding="utf-8").splitlines(), 1):
+        linea = linea.rstrip()
+        if not linea or linea.startswith(";"):
+            continue
+        cabecera = RE_LETRA.match(linea)
+        if cabecera:
+            actual = int(cabecera.group(1), 16)
+            letras[actual] = [cabecera.group(2) or "", cabecera.group(3).strip(), []]
+            continue
+        if actual is None or len(letras[actual][2]) == 8 or len(linea) > 8 or set(linea) - set("#."):
+            raise ErrorEnsamblado(f"{ruta.name}, línea {num}: no se entiende '{linea}'")
+        letras[actual][2].append(int(linea.ljust(8, ".").replace("#", "1").replace(".", "0"), 2))
+    return [(letra, que, filas + [0] * (8 - len(filas))) for letra, que, filas in letras]
+
+
+def guardar_fuente(fuente, ruta=RUTA_FUENTE):
+    lineas = ["; Croquetium 16: fuente de 8x8, 256 letras (0x00 a 0xFF).",
+              "; Cada letra: una cabecera \"codigo letra | que es\" y debajo 8 filas de 8 puntos.",
+              "; '#' es un pixel encendido (1) y '.' apagado (0). La columna de la izquierda es el bit 7.",
+              "; Las lineas que empiezan por ';' no cuentan.",
+              ""]
+    for codigo, (letra, que, filas) in enumerate(fuente):
+        lineas.append(f"0x{codigo:02X} {letra} | {que}" if letra else f"0x{codigo:02X} | {que}")
+        lineas += [f"{fila:08b}".replace("1", "#").replace("0", ".") for fila in filas]
+        lineas.append("")
+    Path(ruta).write_text("\n".join(lineas), encoding="utf-8")
+
+
+def poner_fuente(memoria, fuente):
+    for codigo, (_, _, filas) in enumerate(fuente):
+        for fila, puntos in enumerate(filas):
+            memoria[FUENTE_DERECHA + codigo * 8 + fila] = puntos
+            memoria[FUENTE_IZQUIERDA + codigo * 8 + fila] = puntos << 8
 
 
 def formas_de(plantilla):
@@ -720,7 +776,7 @@ def datasheet(sistema=None):
         ["banco", "1 bit", "0: instrucciones de la ROM; 1: de la RAM de programas"],
         ["TECLA", "16 bits", "última tecla pulsada (0 si no hay)"],
         ["RAM M", "64K x 16", "datos, dirección A"],
-        ["RAM N", "64K x 16", "datos, dirección B"],
+        ["RAM N", "64K x 16", "datos, dirección B; desde 0x8000, la pantalla"],
         ["ROM de programa", "32K x 16 o más", "el programa del sistema"],
         ["RAM de programas", "64K x 16", "programas cargados en marcha"],
         ["ROM de la ALU", "32 x 8", "traduce OOOOO a las 8 señales de la ALU"],
@@ -828,9 +884,44 @@ def datasheet(sistema=None):
         emulado = "sí" if cable["nombre"] in CABLES_CON_CIRCUITO else "no (cable nuevo, falta su circuito)"
         filas.append([i, i // 8, cable["nombre"], cable.get("que_hace", ""), emulado])
     d += tabla(["Bit", "Chip", "Cable", "Qué hace", "En el emulador"], filas)
+    d += ["", "## 10. Pantalla", "",
+          "Blanco y negro, mapeada en la mitad alta de la RAM N: empieza en N[0x8000]. Cada palabra son 16 píxeles "
+          "seguidos en horizontal, el bit 15 a la izquierda; 1 = blanco, 0 = negro. Las filas van una detrás de otra. "
+          "El modo se elige en el IDE (pestaña Pantalla).", ""]
+    filas = []
+    for nombre, (ancho, alto) in MODOS_PANTALLA.items():
+        palabras = ancho * alto // 16
+        filas.append([nombre, ancho // 16, palabras, f"0x{PANTALLA:04X} - 0x{PANTALLA + palabras - 1:04X}"])
+    d += tabla(["Modo", "Palabras por fila", "Palabras", "N"], filas)
+    d += ["",
+          "El píxel (x, y) está en N[0x8000 + y * palabras por fila + x / 16], bit 15 - (x % 16). "
+          "Para escribir en pantalla, B hace de puntero y el dato viene de A o de M (`A => N`, `M => N`)."]
+    d += ["", "## 11. Fuente", "",
+          "Letras de 8x8 para el modo 320x240: 40 columnas y 30 filas de texto. El dibujo está en "
+          "`fuente.txt`, al lado del IDE, y se cambia a mano: '#' es un píxel encendido y la columna "
+          "de la izquierda es el bit 7. De 0x20 a 0x7E es ASCII; el resto son nuestras.", ""]
+    d += tabla(["Qué", "Dónde en M", "Dibujo en"], [
+        ["Fuente derecha", f"0x{FUENTE_DERECHA:04X} - 0x{FUENTE_DERECHA + LETRAS * 8 - 1:04X}", "bits 7-0"],
+        ["Fuente izquierda", f"0x{FUENTE_IZQUIERDA:04X} - 0x{FUENTE_IZQUIERDA + LETRAS * 8 - 1:04X}", "bits 15-8"],
+    ])
+    d += ["",
+          f"La fila r (0 a 7, de arriba abajo) de la letra c está en M[0x{FUENTE_DERECHA:04X} + c * 8 + r] "
+          f"y en M[0x{FUENTE_IZQUIERDA:04X} + c * 8 + r]. Una letra en una columna par va en la mitad "
+          "izquierda de la palabra de pantalla y una impar en la derecha: con las dos fuentes, dos letras "
+          "se juntan con `M|N => N`.",
+          "",
+          "En el IDE, la casilla \"Fuente en M\" la carga en cada reset. Las letras se ven dibujadas en la pestaña Fuente.",
+          ""]
+    fuente = cargar_fuente()
+    if fuente is None:
+        d += [f"No está `{RUTA_FUENTE.name}`."]
+    else:
+        d += tabla(["Hex", "Dec", "Letra", "Qué es", "ASCII"], [
+            [f"0x{c:02X}", c, letra, que, "sí" if 0x20 <= c <= 0x7E else ""]
+            for c, (letra, que, _) in enumerate(fuente)])
     d += [
         "",
-        "## 10. Reglas y trampas",
+        "## 12. Reglas y trampas",
         "",
         "1. Un número solo entra por A, y A es también la dirección de M: para guardar un número, pasa por B.",
         "2. `M+1 => AM`: M se escribe en la dirección de la A de antes. Igual con B y N.",
@@ -844,7 +935,7 @@ def datasheet(sistema=None):
         f"10. La pila R guarda {NIVELES_PILA_R} vueltas. Con una más se pisa la más vieja (el IDE avisa).",
         "11. Las de `/2` tratan los números como positivos (0 a 65535): con negativos no dan la mitad (-4/2 da 32766). A cambio, con A y B positivos, `(A+B)/2` da la media aunque la suma se pase de 16 bits y `(A-B)/2` da la mitad de la resta aunque salga negativa.",
         "",
-        "## 11. Archivos",
+        "## 13. Archivos",
         "",
     ]
     d += tabla(["Comando", "Escribe"], [
@@ -853,6 +944,7 @@ def datasheet(sistema=None):
         ["`--rom-sistema`", "`rom_sistema.hex`"],
         ["`--datasheet`", "`DATASHEET.md`"],
         ["`--convertir viejo.cro`", "`viejo_nuevo.cro` en la sintaxis nueva"],
+        ["`--fuente prog.cro`", "nada: carga `fuente.txt` en M antes de ejecutar"],
     ])
     return "\n".join(d) + "\n"
 
@@ -866,6 +958,7 @@ def main():
     parser.add_argument("--rom-alu", action="store_true", help="escribe rom_alu.hex")
     parser.add_argument("--rom-sistema", action="store_true", help="escribe rom_sistema.hex")
     parser.add_argument("--convertir", action="store_true", help="pasa el programa a la sintaxis nueva")
+    parser.add_argument("--fuente", action="store_true", help="carga fuente.txt en M antes de ejecutar")
     args = parser.parse_args()
 
     if args.datasheet:
@@ -904,6 +997,14 @@ def main():
         print("Variables: " + ", ".join(f"{k}={v}" for k, v in variables.items()))
 
     maquina = Croquetium(programa)
+    if args.fuente:
+        try:
+            fuente = cargar_fuente()
+        except ErrorEnsamblado as e:
+            sys.exit(f"Error: {e}")
+        if fuente is None:
+            sys.exit(f"Error: no está {RUTA_FUENTE.name}")
+        poner_fuente(maquina.M, fuente)
     final = maquina.correr(args.ciclos, args.traza)
     print(f"\nFin: {final}")
     maquina.resumen(variables)
