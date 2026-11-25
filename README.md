@@ -20,14 +20,15 @@ Todavía no hay nada montado en protoboard. Vídeo, teclado de verdad y el BASIC
 4. [Saltos](#saltos)
 5. [Instrucciones de sistema](#instrucciones-de-sistema)
 6. [La pantalla](#la-pantalla)
-7. [El ensamblador](#el-ensamblador)
-8. [El IDE y el emulador](#el-ide-y-el-emulador)
-9. [Los circuitos en Digital](#los-circuitos-en-digital)
-10. [Bloque a bloque](#bloque-a-bloque)
-11. [La palabra de control](#la-palabra-de-control)
-12. [Velocidad](#velocidad)
-13. [Qué falta](#qué-falta)
-14. [De dónde sale cada idea](#de-dónde-sale-cada-idea)
+7. [El teclado](#el-teclado)
+8. [El ensamblador](#el-ensamblador)
+9. [El IDE y el emulador](#el-ide-y-el-emulador)
+10. [Los circuitos en Digital](#los-circuitos-en-digital)
+11. [Bloque a bloque](#bloque-a-bloque)
+12. [La palabra de control](#la-palabra-de-control)
+13. [Velocidad](#velocidad)
+14. [Qué falta](#qué-falta)
+15. [De dónde sale cada idea](#de-dónde-sale-cada-idea)
 
 ## La máquina en resumen
 
@@ -168,6 +169,27 @@ Para escribir en 320×240 hay una fuente de 8×8 con 256 letras: 40 columnas y 3
 
 La fila r de la letra c está en `M[0x7000 + c * 8 + r]` y `M[0x7800 + c * 8 + r]`. Una palabra de pantalla lleva dos letras: la de la columna par con la fuente izquierda y la de la impar con la derecha, juntas con `M|N => N`. `programas/arranque.cro` pinta la pantalla de arranque con el logo y la croqueta girando.
 
+## El teclado
+
+`TECLA => A` copia la última tecla pulsada a A y deja TECLA a 0: un 0 es que no hay tecla nueva. Solo se guarda una, así que si se pulsan dos antes de leer, la primera se pierde.
+
+Cada letra entra con su código de la fuente (`a` es 0x61, `ñ` es 0x0B), así que se puede pintar tal cual sin traducir. Como la fuente ya usa de 0x00 a 0xFF, las teclas que no se pintan van de 0x100 en adelante: si la tecla es mayor que 255, es especial.
+
+| Tecla | Código |
+|---|---|
+| Intro | 0x100 (256) |
+| Borrar | 0x101 (257) |
+| Esc | 0x102 (258) |
+| Arriba | 0x103 (259) |
+| Abajo | 0x104 (260) |
+| Izquierda | 0x105 (261) |
+| Derecha | 0x106 (262) |
+| Tab | 0x107 (263) |
+
+En el IDE, un clic en la pestaña Pantalla hace que lo que se teclea en el portátil vaya a TECLA (se enciende el borde). Un clic en el editor lo devuelve. F5, F6, F10 y los atajos con Ctrl siguen siendo del IDE.
+
+Falta decidir la interfaz en hardware (teclado PS/2 o matriz de teclas) y si lleva una cola para no perder teclas.
+
 ## El ensamblador
 
 Los programas son archivos `.cro`.
@@ -213,7 +235,7 @@ Hace falta Python 3 con Tkinter (el instalador normal de Python en Windows ya lo
   - Ves los registros y la instrucción desmontada por campos.
   - Las RAM M y N se recorren enteras, siguiendo a A o B o fijas en una dirección.
   - Vista tablero: los bits de varias palabras como una rejilla.
-  - Pestaña Pantalla: enseña la pantalla en 640×480 o 320×240 mientras corre el programa; al pasar el ratón dice el píxel, la casilla de N y el bit.
+  - Pestaña Pantalla: enseña la pantalla en 640×480 o 320×240 mientras corre el programa; al pasar el ratón dice el píxel, la casilla de N y el bit. Con un clic en ella, el teclado del portátil escribe en TECLA.
   - Casilla "Fuente en M": con ella marcada, cada reset carga `fuente.txt` en M.
   - Pestaña Fuente: las 256 letras dibujadas; al pasar el ratón dice el código, qué es y dónde está en M. Con un clic copia el código y la abre en el editor de al lado, donde se pinta píxel a píxel (espejo, invertir, mover). Lo que cambias entra ya en M; "Guardar fuente.txt" lo deja en el archivo.
   - Pestaña Diseño: pantallas de texto de 40×30 dibujadas con la fuente, como los editores de PICO-8 o TIC-80. Lápiz, texto, cajas (fina, doble, redonda o pegada al borde), líneas que se unen solas con las cajas (┬ ├ ╠ ┼...), relleno y Ctrl+Z. Se guardan como `.pan`, se ven en la pestaña Pantalla o se convierten en un `.cro` que las pinta.
@@ -405,7 +427,7 @@ Si algún día hace falta más velocidad, hay tres opciones:
 - Contar chips y medir la ruta crítica con los datos de cada chip.
 - Montar la CPU mínima en protoboard.
 - Vídeo en hardware: la señal VGA de 640×480 a 60 Hz, cómo comparten la CPU y el vídeo la RAM de pantalla, y modos con tiles más adelante.
-- Teclado y el BASIC (Croquetium BASIC).
+- Teclado en hardware (PS/2 o matriz, con o sin cola) y el BASIC (Croquetium BASIC).
 
 ## De dónde sale cada idea
 

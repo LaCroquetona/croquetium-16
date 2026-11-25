@@ -1,0 +1,2013 @@
+// Demo sin teclado: un monigote cruza el nivel solo, salta los pinchos y coge las monedas.
+// 320x240 con la fuente en M. Todo son letras de la fuente puestas con PON.
+// QUITA borra solo la mitad de la palabra de su letra, para no comerse la de al lado.
+
+@32767
+A+1 => B        // borra la pantalla
+@4800
+PC+1 => C
+0 => N
+B+1 => B
+A-1 => A >0
+
+@32767
+A+1 => B
+@321            // fila 2, columna 3
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xB8           
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@322            // fila 2, columna 4
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xB9           
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@481            // fila 3, columna 3
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xBA           
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@482            // fila 3, columna 4
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xBB           
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@323            // fila 2, columna 7
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0x63
+A => B
+@PON
+A => C
+VUELVE
+@0x72
+A => B
+@PON
+A => C
+VUELVE
+@0x6F
+A => B
+@PON
+A => C
+VUELVE
+@0x71
+A => B
+@PON
+A => C
+VUELVE
+@0x75
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@0x74
+A => B
+@PON
+A => C
+VUELVE
+@0x69
+A => B
+@PON
+A => C
+VUELVE
+@0x75
+A => B
+@PON
+A => C
+VUELVE
+@0x6D
+A => B
+@PON
+A => C
+VUELVE
+@0x20
+A => B
+@PON
+A => C
+VUELVE
+@0x31
+A => B
+@PON
+A => C
+VUELVE
+@0x36
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@483            // fila 3, columna 7
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0x64
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@0x6D
+A => B
+@PON
+A => C
+VUELVE
+@0x6F
+A => B
+@PON
+A => C
+VUELVE
+@0x20
+A => B
+@PON
+A => C
+VUELVE
+@0x64
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@0x20
+A => B
+@PON
+A => C
+VUELVE
+@0x6C
+A => B
+@PON
+A => C
+VUELVE
+@0x61
+A => B
+@PON
+A => C
+VUELVE
+@0x20
+A => B
+@PON
+A => C
+VUELVE
+@0x66
+A => B
+@PON
+A => C
+VUELVE
+@0x75
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@0x6E
+A => B
+@PON
+A => C
+VUELVE
+@0x74
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@1286           // fila 8, columna 12
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xD0           // estrella
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@1290           // fila 8, columna 20
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xD0           // estrella
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@975            // fila 6, columna 31
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xD0           // estrella
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@1298           // fila 8, columna 36
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xD0           // estrella
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3360           // fila 21, columna 0
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDF           
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@0xDF
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3204           // fila 20, columna 9
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0x1D           // pinchos
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3209           // fila 20, columna 18
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0x1D           // pinchos
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3213           // fila 20, columna 26
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0x1D           // pinchos
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3218           // fila 20, columna 37
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xCF           // casa
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3058           // fila 19, columna 37
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xD6           // bandera
+A => B
+@PON
+A => C
+VUELVE
+
+(VUELTA)
+@32767
+A+1 => B
+@3202           // fila 20, columna 5
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@2724           // fila 17, columna 9
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3206           // fila 20, columna 13
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@2729           // fila 17, columna 18
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3211           // fila 20, columna 22
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@2733           // fila 17, columna 26
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@3215           // fila 20, columna 30
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDD           // moneda
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@4167           // fila 26, columna 14
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@4167           // fila 26, columna 15
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@4168           // fila 26, columna 16
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@4168           // fila 26, columna 17
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@4169           // fila 26, columna 18
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@4169           // fila 26, columna 19
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3200           // fila 20, columna 1
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3200           // fila 20, columna 1
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3201           // fila 20, columna 2
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3201           // fila 20, columna 2
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3201           // fila 20, columna 3
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3201           // fila 20, columna 3
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3202           // fila 20, columna 4
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3202           // fila 20, columna 4
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3202           // fila 20, columna 5
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3202           // fila 20, columna 5
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3203           // fila 20, columna 6
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3203           // fila 20, columna 6
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3203           // fila 20, columna 7
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3203           // fila 20, columna 7
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3044           // fila 19, columna 8
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3044           // fila 19, columna 8
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@2724           // fila 17, columna 9
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@2724           // fila 17, columna 9
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3045           // fila 19, columna 10
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3045           // fila 19, columna 10
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3205           // fila 20, columna 11
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3205           // fila 20, columna 11
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3206           // fila 20, columna 12
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3206           // fila 20, columna 12
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3206           // fila 20, columna 13
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3206           // fila 20, columna 13
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3207           // fila 20, columna 14
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3207           // fila 20, columna 14
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3207           // fila 20, columna 15
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3207           // fila 20, columna 15
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3208           // fila 20, columna 16
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3208           // fila 20, columna 16
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3048           // fila 19, columna 17
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3048           // fila 19, columna 17
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@2729           // fila 17, columna 18
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@2729           // fila 17, columna 18
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3049           // fila 19, columna 19
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3049           // fila 19, columna 19
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3210           // fila 20, columna 20
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3210           // fila 20, columna 20
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3210           // fila 20, columna 21
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3210           // fila 20, columna 21
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3211           // fila 20, columna 22
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3211           // fila 20, columna 22
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3211           // fila 20, columna 23
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3211           // fila 20, columna 23
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3212           // fila 20, columna 24
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3212           // fila 20, columna 24
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3052           // fila 19, columna 25
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3052           // fila 19, columna 25
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@2733           // fila 17, columna 26
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@2733           // fila 17, columna 26
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3053           // fila 19, columna 27
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDC           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3053           // fila 19, columna 27
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3214           // fila 20, columna 28
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3214           // fila 20, columna 28
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3214           // fila 20, columna 29
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3214           // fila 20, columna 29
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3215           // fila 20, columna 30
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3215           // fila 20, columna 30
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3215           // fila 20, columna 31
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3215           // fila 20, columna 31
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3216           // fila 20, columna 32
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3216           // fila 20, columna 32
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3216           // fila 20, columna 33
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3216           // fila 20, columna 33
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3217           // fila 20, columna 34
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xDA           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3217           // fila 20, columna 34
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3217           // fila 20, columna 35
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@0xDB           
+A => B
+@PON
+A => C
+VUELVE
+@25000          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3217           // fila 20, columna 35
+A+B => B
+@sitio
+B => M
+@28672
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@32767
+A+1 => B
+@3218           // fila 20, columna 36
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0xD1           // corazón
+A => B
+@PON
+A => C
+VUELVE
+@32767
+A+1 => B
+@4167           // fila 26, columna 14
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@0x10
+A => B
+@PON
+A => C
+VUELVE
+@0x62
+A => B
+@PON
+A => C
+VUELVE
+@0x69
+A => B
+@PON
+A => C
+VUELVE
+@0x65
+A => B
+@PON
+A => C
+VUELVE
+@0x6E
+A => B
+@PON
+A => C
+VUELVE
+@0x21
+A => B
+@PON
+A => C
+VUELVE
+@32767          // espera
+PC+1 => C
+A-1 => A >0
+@32767          // espera
+PC+1 => C
+A-1 => A >0
+@32767
+A+1 => B
+@3218           // fila 20, columna 36
+A+B => B
+@sitio
+B => M
+@30720
+A => B
+@fuente
+B => M
+@QUITA
+A => C
+VUELVE
+@VUELTA
+A => C
+jmp
+
+(PON)
+2B => B
+2B => B
+2B => B         // B = letra * 8
+@fuente
+M+B => B
+@fila
+B => M
+@8
+A => B
+@cuenta
+B => M
+@sitio
+M => B
+(PON_FILA)
+@fila
+M+1 => M
+M-1 => A
+M|N => N
+@20
+A+B => B
+@PON_FILA
+A => C
+@cuenta
+M-1 => M >0
+@PON_ERA_DERECHA
+A => C
+@30720
+A => B
+@fuente
+M-B !=0
+@28672
+A => B
+@fuente
+B => M
+RETORNA
+(PON_ERA_DERECHA)
+@30720
+A => B
+@fuente
+B => M
+@sitio
+M+1 => M
+RETORNA
+
+(QUITA)
+@255
+A => B
+@mascara
+B => M          // letra izquierda: se queda la derecha (0x00FF)
+@QUITA_SIGUE
+A => C
+@30720
+A => B
+@fuente
+M-B =0
+@256
+-A => A
+A => B
+@mascara
+B => M          // letra derecha: se queda la izquierda (0xFF00)
+(QUITA_SIGUE)
+@8
+A => B
+@cuenta
+B => M
+@sitio
+M => B
+(QUITA_FILA)
+@mascara
+M&N => N
+@20
+A+B => B
+@QUITA_FILA
+A => C
+@cuenta
+M-1 => M >0
+RETORNA

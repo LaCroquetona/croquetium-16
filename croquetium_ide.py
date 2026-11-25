@@ -36,6 +36,11 @@ ESTADOS = ("carry", "rotar", "encadenar")
 ORIENTACIONES = ("filas", "columnas")
 MAX_PALABRAS = 64
 ANCHO_PANTALLA, ALTO_PANTALLA = 640, 480
+TECLA_DE_TK = {
+    "Return": "Intro", "KP_Enter": "Intro", "BackSpace": "Borrar", "Escape": "Esc",
+    "Up": "Arriba", "Down": "Abajo", "Left": "Izquierda", "Right": "Derecha", "Tab": "Tab",
+}
+CONTROL = 0x0004
 
 COLOR_CAMPO = {
     "15": GRIS, "X": AZUL, "Y": AZUL, "OOOOO": AMBAR,
@@ -457,13 +462,23 @@ class PestanaPantalla:
             tk.Radiobutton(cabecera, text=nombre, variable=self.modo, value=nombre, **radio).pack(side="left", padx=(10, 0))
         self.rango = etiqueta(cabecera, "")
         self.rango.pack(side="left", padx=12)
+        self.teclado = etiqueta(cabecera, "")
+        self.teclado.pack(side="right")
 
-        self.lienzo = tk.Canvas(padre, width=ANCHO_PANTALLA, height=ALTO_PANTALLA, bg="black",
-                                highlightthickness=0, cursor="crosshair")
-        self.lienzo.pack(pady=8)
+        # El borde va en un marco: el de un Canvas se pinta encima del dibujo.
+        self.borde = tk.Frame(padre, bg=FONDO, padx=2, pady=2)
+        self.borde.pack(pady=6)
+        self.lienzo = tk.Canvas(self.borde, width=ANCHO_PANTALLA, height=ALTO_PANTALLA, bg="black",
+                                highlightthickness=0, cursor="crosshair", takefocus=True)
+        self.lienzo.pack()
         self.dibujo = self.lienzo.create_image(0, 0, anchor="nw")
         self.lienzo.bind("<Motion>", self.senalar)
         self.lienzo.bind("<Leave>", lambda e: self.sitio.config(text=""))
+        self.lienzo.bind("<Button-1>", lambda e: self.lienzo.focus_set())
+        self.lienzo.bind("<FocusIn>", lambda e: self.poner_teclado(True))
+        self.lienzo.bind("<FocusOut>", lambda e: self.poner_teclado(False))
+        self.lienzo.bind("<Key>", self.teclear)
+        self.poner_teclado(False)
         self.sitio = etiqueta(padre, "", TEXTO, bg=FONDO)
         self.sitio.pack()
         self.cambiar_modo()
@@ -493,6 +508,31 @@ class PestanaPantalla:
         datos = b"P5 %d %d 255\n" % (ANCHO_PANTALLA, ALTO_PANTALLA) + b"".join(filas)
         self.imagen = tk.PhotoImage(data=datos, format="PPM")
         self.lienzo.itemconfig(self.dibujo, image=self.imagen)
+
+    def poner_teclado(self, activo):
+        self.borde.config(bg=AMBAR if activo else FONDO)
+        if activo:
+            self.teclado.config(text="Teclado -> TECLA (clic en el editor para salir)", fg=AMBAR)
+        else:
+            self.teclado.config(text="Clic en la pantalla para teclear", fg=GRIS)
+
+    def teclear(self, evento):
+        # F5, F6, F10 y Ctrl+algo siguen yendo al IDE. AltGr llega como Ctrl+Alt en Windows,
+        # por eso una letra que se puede escribir entra aunque venga con Ctrl (la @ del teclado español).
+        if evento.keysym in TECLA_DE_TK and not evento.state & CONTROL:
+            nombre = TECLA_DE_TK[evento.keysym]
+            codigo = cq.TECLAS_ESPECIALES[nombre]
+        elif evento.char and evento.char.isprintable():
+            codigo = cq.codigo_letra(evento.char, self.ide.fuente)
+            if codigo is None:
+                self.teclado.config(text=f"'{evento.char}' no está en la fuente", fg=ROJO)
+                return "break"
+            nombre = "espacio" if evento.char == " " else evento.char
+        else:
+            return None
+        self.ide.pulsar_tecla(codigo)
+        self.teclado.config(text=f"TECLA = 0x{codigo:03X} ({nombre})", fg=AMBAR)
+        return "break"
 
     def senalar(self, evento):
         ancho, alto, por_fila, escala = self.medidas()
@@ -757,7 +797,6 @@ ESTILOS_CAJA = {
     "redonda": (0x04, 0x11, 0x05, 0x12, 0x12, 0x06, 0x11, 0x07),
     "borde": (0x94, 0x90, 0x95, 0x92, 0x93, 0x96, 0x91, 0x97),
 }
-TECLAS_ESPECIALES = {"ñ": 0x0B, "ü": 0x0D, "¿": 0x0F, "¡": 0x10}
 COLUMNAS_TEXTO, FILAS_TEXTO = 40, 30
 
 
@@ -1103,7 +1142,7 @@ class PestanaDiseno:
             paso = {"Left": -1, "Right": 1, "Up": -COLUMNAS_TEXTO, "Down": COLUMNAS_TEXTO}[evento.keysym]
             self.cursor = min(len(self.rejilla) - 1, max(0, self.cursor + paso))
         elif evento.char:
-            codigo = self.codigo_de(evento.char)
+            codigo = cq.codigo_letra(evento.char, self.ide.fuente)
             if codigo is None:
                 return
             self.guardar_historial()
@@ -1113,16 +1152,6 @@ class PestanaDiseno:
             return
         self.pintar()
         return "break"
-
-    def codigo_de(self, caracter):
-        if caracter in TECLAS_ESPECIALES:
-            return TECLAS_ESPECIALES[caracter]
-        if 0x20 <= ord(caracter) <= 0x7E:
-            return ord(caracter)
-        for codigo, (letra, _, _) in enumerate(self.ide.fuente or []):
-            if letra == caracter:
-                return codigo
-        return None
 
     def elegir(self, evento):
         col, fila = evento.x // self.PALETA, evento.y // self.PALETA
@@ -1517,7 +1546,7 @@ class IDE:
         self.pestanas.add(roms, text="ROMs")
         self.pestanas.add(sistema, text="Sistema")
         self.pestanas.add(hoja, text="Datasheet")
-        self.pestanas.bind("<<NotebookTabChanged>>", lambda e: self.refrescar())
+        self.pestanas.bind("<<NotebookTabChanged>>", self.cambiar_pestana)
         self.pestana_roms = roms
         self.montar_maquina(maquina)
         self.pantalla = PestanaPantalla(pantalla, self)
@@ -2134,6 +2163,18 @@ class IDE:
             self.error_fuente = f"Fuente: {e}"
         if self.error_fuente and hasattr(self, "barra_estado"):
             self.estado(self.error_fuente, ROJO)
+
+    def cambiar_pestana(self, _evento=None):
+        # Con la pantalla escondida, las teclas vuelven al editor.
+        if self.raiz.focus_get() is self.pantalla.lienzo:
+            self.editor.focus_set()
+        self.refrescar()
+
+    def pulsar_tecla(self, codigo):
+        self.maquina.TECLA = codigo
+        if not self.corriendo:
+            self.regs_cambiados.add("TECLA")
+            self.refrescar()
 
     def borrar_inputs(self):
         self.inputs = {"M": {}, "N": {}, "reg": {}}

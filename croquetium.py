@@ -82,6 +82,14 @@ RUTA_FUENTE = Path(__file__).with_name("fuente.txt")
 FUENTE_DERECHA = 0x7000
 FUENTE_IZQUIERDA = 0x7800
 LETRAS = 256
+# Teclado: cada letra entra en TECLA con su código de la fuente, para pintarla sin traducir.
+# La fuente ocupa de 0x00 a 0xFF, así que las teclas que no se pintan van de 0x100 en adelante.
+LETRAS_FUERA_DE_ASCII = {"ñ": 0x0B, "ü": 0x0D, "¿": 0x0F, "¡": 0x10}
+TECLAS_ESPECIALES = {
+    "Intro": 0x100, "Borrar": 0x101, "Esc": 0x102,
+    "Arriba": 0x103, "Abajo": 0x104, "Izquierda": 0x105, "Derecha": 0x106,
+    "Tab": 0x107,
+}
 
 RUTA_SISTEMA = Path(__file__).with_name("sistema.json")
 
@@ -252,6 +260,18 @@ def poner_fuente(memoria, fuente):
         for fila, puntos in enumerate(filas):
             memoria[FUENTE_DERECHA + codigo * 8 + fila] = puntos
             memoria[FUENTE_IZQUIERDA + codigo * 8 + fila] = puntos << 8
+
+
+def codigo_letra(caracter, fuente=None):
+    # Código de la fuente para una letra tecleada, o None si la fuente no la tiene.
+    if caracter in LETRAS_FUERA_DE_ASCII:
+        return LETRAS_FUERA_DE_ASCII[caracter]
+    if len(caracter) == 1 and 0x20 <= ord(caracter) <= 0x7E:
+        return ord(caracter)
+    for codigo, (letra, _, _) in enumerate(fuente or []):
+        if letra == caracter:
+            return codigo
+    return None
 
 
 def formas_de(plantilla):
@@ -774,7 +794,7 @@ def datasheet(sistema=None):
         ["rotar", "1 bit", "modo: al desplazar, el bit que sale entra por el otro lado"],
         ["encadenar", "1 bit", "modo: las sumas y restas suman también el carry"],
         ["banco", "1 bit", "0: instrucciones de la ROM; 1: de la RAM de programas"],
-        ["TECLA", "16 bits", "última tecla pulsada (0 si no hay)"],
+        ["TECLA", "16 bits", "última tecla pulsada (0 si no hay); códigos en el apartado 12"],
         ["RAM M", "64K x 16", "datos, dirección A"],
         ["RAM N", "64K x 16", "datos, dirección B; desde 0x8000, la pantalla"],
         ["ROM de programa", "32K x 16 o más", "el programa del sistema"],
@@ -921,7 +941,25 @@ def datasheet(sistema=None):
             for c, (letra, que, _) in enumerate(fuente)])
     d += [
         "",
-        "## 12. Reglas y trampas",
+        "## 12. Teclado",
+        "",
+        "`TECLA => A` copia la última tecla pulsada a A y deja TECLA a 0, así que un 0 es que no hay tecla nueva. "
+        "Solo se guarda una: si se pulsan dos antes de leer, la primera se pierde.",
+        "",
+        "Las letras, números y signos entran con su código de la fuente (apartado 11): `a` es 0x61, `ñ` 0x0B. "
+        "Con el código en la mano se pinta la letra sin traducir nada. Como la fuente ocupa de 0x00 a 0xFF, "
+        "las teclas que no se pintan van de 0x100 en adelante: si la tecla es mayor que 255, es especial.",
+        "",
+    ]
+    d += tabla(["Tecla", "Hex", "Dec"], [[nombre, f"0x{c:03X}", c] for nombre, c in TECLAS_ESPECIALES.items()])
+    d += [
+        "",
+        "En el IDE: clic en la pestaña Pantalla y lo que se teclea va a TECLA (el borde se enciende). "
+        "Clic en el editor para dejar de mandar teclas. F5, F6, F10 y Ctrl siguen siendo del IDE.",
+        "",
+        "Sin decidir: la interfaz del teclado en hardware (PS/2 o matriz) y si lleva una cola para no perder teclas.",
+        "",
+        "## 13. Reglas y trampas",
         "",
         "1. Un número solo entra por A, y A es también la dirección de M: para guardar un número, pasa por B.",
         "2. `M+1 => AM`: M se escribe en la dirección de la A de antes. Igual con B y N.",
@@ -935,7 +973,7 @@ def datasheet(sistema=None):
         f"10. La pila R guarda {NIVELES_PILA_R} vueltas. Con una más se pisa la más vieja (el IDE avisa).",
         "11. Las de `/2` tratan los números como positivos (0 a 65535): con negativos no dan la mitad (-4/2 da 32766). A cambio, con A y B positivos, `(A+B)/2` da la media aunque la suma se pase de 16 bits y `(A-B)/2` da la mitad de la resta aunque salga negativa.",
         "",
-        "## 13. Archivos",
+        "## 14. Archivos",
         "",
     ]
     d += tabla(["Comando", "Escribe"], [
